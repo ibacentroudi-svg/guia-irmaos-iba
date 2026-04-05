@@ -318,9 +318,7 @@ async function carregarDados() {
 }
  
 function getCategorias() {
-  const base = unidadeAtiva === 'Todas' ? prestadores
-    : prestadores.filter(p => unidadeKey(p.unidade) === unidadeAtiva);
-  return ['Todas', ...[...new Set(base.map(p => p.categoria))].filter(Boolean).sort()];
+  return ['Todas', ...Object.keys(catIcons).sort()];
 }
  
 const catIcons = {
