@@ -147,17 +147,24 @@
     header { padding:0 1rem; }
     .logo-text span { display:none; }
     .header-cta { font-size:0.78rem; padding:0.45rem 0.85rem; }
+    .cta-short { display:none; }
     .main { grid-template-columns:1fr; padding:1rem; }
     .sidebar { position:static; }
-    .sidebar-section { display:flex; flex-wrap:wrap; gap:0.4rem; align-items:center; }
-    .sidebar-title { width:100%; margin-bottom:0.4rem; border-bottom:none; padding-bottom:0; }
-    .cat-btn { width:auto; padding:0.35rem 0.7rem; }
+    .sidebar-section { display:block; }
+    .sidebar-title { margin-bottom:0.5rem; border-bottom:none; padding-bottom:0; }
+    #catList { display:flex; gap:0.4rem; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+    #catList::-webkit-scrollbar { display:none; }
+    .cat-btn { flex-shrink:0; width:auto; padding:0.35rem 0.7rem; white-space:nowrap; }
     .modal-details { grid-template-columns:1fr; }
     .hero { padding:2rem 1rem 2.5rem; }
     .stats-bar { padding:0.7rem 1rem; }
     .stats-inner { gap:1rem; }
     .unit-filter { gap:0.4rem; }
     .unit-btn { font-size:0.75rem; padding:0.35rem 0.7rem; }
+  }
+  @media (max-width:480px) {
+    .cta-full { display:none; }
+    .cta-short { display:inline; }
   }
 </style>
 </head>
@@ -174,7 +181,7 @@
       </div>
     </a>
     <a class="header-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSd7pxoCRJaLgGe9CGoRQZb4p7R-tfRQ4zTQHbOjUAgTA51FAA/viewform" target="_blank">
-      + Cadastrar Serviço
+      <span class="cta-full">+ Cadastrar Serviço</span><span class="cta-short">+ Cadastrar</span>
     </a>
   </div>
 </header>
