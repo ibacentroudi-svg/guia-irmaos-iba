@@ -6,18 +6,26 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Guia de Irmãos** — a single-page directory of service providers from Igreja Batista do Amor (IBA), Uberlândia/MG. Members of the church can browse and contact fellow members who offer professional services.
 
-The entire app is a **single HTML file** (`index.html`) with no build step, no dependencies to install, and no server — it runs directly in the browser.
+The project has **two HTML pages** (no build step, no dependencies, no server):
+- `index.html` — public site listing approved providers
+- `aprovar.html` — internal admin page for reviewing pending submissions (not linked from the public site)
 
 ## Architecture
 
-The app has three layers, all in `index.html`:
+Both pages share the same patterns: vanilla JS, fetch from Google Sheets via the Visualization API, all state and rendering rebuilt from scratch on each change.
 
-1. **Data source — Google Sheets**: Data is fetched at runtime via the Google Visualization API from a public spreadsheet. The two config constants at the top of the `<script>` block are the only things that need changing to point to a different sheet:
-   ```js
-   const SHEET_ID   = '...';
-   const SHEET_NAME = 'Publicados';
-   ```
-   The sheet columns (mapped by lowercase label) used in code: `nome`, `servico`, `descricao`, `categoria`, `unidade`, `celula`, `whatsapp`, `foto`, `emoji`, `endereco`, `horario`, `instagram`.
+### `index.html` (public)
+Reads from the **`Publicados`** tab. Three layers:
+1. **Data source**: `SHEET_ID` + `SHEET_NAME = 'Publicados'`. Columns used (mapped by lowercase label): `nome`, `servico`, `descricao`, `categoria`, `unidade`, `celula`, `whatsapp`, `foto`, `emoji`, `endereco`, `horario`, `instagram`.
+2. **State & rendering**: Global state in `prestadores`, `categoriaAtiva`, `unidadeAtiva`. UI rebuilt by `renderCards()` and `renderCats()`.
+3. **Units (unidades)**: Three locations — Sede, Centro, Oeste. The spreadsheet may use short (`"Sede"`) or prefixed (`"Iba Sede"`) forms; `unidadeKey()` normalises both.
+
+### `aprovar.html` (admin)
+Reads from the **`Aguardando aprovação`** tab (lowercase `a` in "aprovação" — the gviz API is case-sensitive on tab names).
+
+- **Column aliasing**: This tab's headers come straight from the Google Form (e.g. `Seu nome completo`, `Prédio IBA que você faz parte`). A `columnAliases` map normalises them to the same short keys used by `index.html` (`nome`, `unidade`, etc.) so render logic can be shared.
+- **Status filter**: Reads the `Status` column. Entries with status `Publicado` are hidden; `Pendente` (or empty) and `Aguardando análise` are shown. `Aguardando análise` cards render dimmed. `statusKey()` strips accents and lowercases for robust matching. New form submissions get `Pendente` automatically via an Apps Script `onFormSubmit` trigger on the spreadsheet.
+- **WhatsApp delivery**: Each card has a `📤 Enviar p/ resp.` button (sends one entry to the unit's responsável) and each unit section has a `📤 Enviar todas` button (batch). The destination numbers live in the `RESPONSAVEIS` constant at the top of the script (one per unit, with `55` country code prefix). Empty number → alert.
 
 2. **State & rendering**: Pure vanilla JS. Global state lives in three variables (`prestadores`, `categoriaAtiva`, `unidadeAtiva`). All UI is rebuilt from scratch on each filter/search change by `renderCards()` and `renderCats()`.
 
@@ -37,7 +45,11 @@ CSS custom properties (defined in `:root`):
 
 ## Deployment
 
-No build step. Deploy by serving `index.html` as a static file (GitHub Pages, Netlify, etc.). The Google Sheet must be published publicly ("anyone with the link can view").
+No build step. Deploy by serving the HTML files as static assets (GitHub Pages, Netlify, etc.). The Google Sheet must be published publicly ("anyone with the link can view") — both the `Publicados` and `Aguardando aprovação` tabs.
+
+Live URLs (GitHub Pages):
+- Public: `https://ibacentroudi-svg.github.io/guia-irmaos-iba/index.html`
+- Admin: `https://ibacentroudi-svg.github.io/guia-irmaos-iba/aprovar.html`
 
 ## UI/UX Preferences
 - Prefer simple, intuitive solutions over clever ones (e.g., avoid horizontal scroll for mobile navigation, avoid decorative backgrounds like capsules unless requested)
