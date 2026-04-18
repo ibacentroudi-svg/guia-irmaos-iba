@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aprovações Pendentes — Guia de Irmãos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FAF7F2;
+    --warm-white: #FFFDF9;
+    --gold: #C8963E;
+    --gold-light: #E8B86D;
+    --gold-pale: #F5E6CC;
+    --brown-dark: #2C1A0E;
+    --brown-mid: #5C3D1E;
+    --text: #1E1209;
+    --text-muted: #7A6248;
+    --border: #E8D9C4;
+    --shadow-hover: rgba(44,26,14,0.16);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { overflow-x:hidden; width:100%; }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; }
+
+  /* HEADER */
+  header { background:var(--brown-dark); padding:0 2rem; position:sticky; top:0; z-index:100; border-bottom:2px solid var(--gold); }
+  .header-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:70px; gap:1rem; }
+  .logo { display:flex; align-items:center; gap:0.75rem; text-decoration:none; flex-shrink:0; }
+  .logo-img { height:42px; width:auto; display:block; }
+  .logo-text { font-family:'Playfair Display',serif; color:var(--cream); font-size:1.15rem; font-weight:600; line-height:1.2; }
+  .logo-text span { display:block; font-size:0.65rem; font-family:'DM Sans',sans-serif; font-weight:400; color:var(--gold-light); letter-spacing:0.12em; text-transform:uppercase; }
+  .header-badge { background:rgba(200,150,62,0.18); border:1px solid rgba(200,150,62,0.35); color:var(--gold-light); padding:0.35rem 0.85rem; border-radius:6px; font-size:0.78rem; font-weight:600; letter-spacing:0.04em; }
+
+  /* HERO */
+  .page-hero { background:var(--brown-dark); padding:2rem 2rem 2.5rem; border-bottom:2px solid var(--gold); }
+  .page-hero-inner { max-width:1200px; margin:0 auto; }
+  .page-hero h1 { font-family:'Playfair Display',serif; color:var(--cream); font-size:1.6rem; font-weight:700; margin-bottom:0.3rem; }
+  .page-hero p { color:#BCA98A; font-size:0.88rem; font-weight:300; }
+
+  /* LOADING */
+  .loading-bar { background:var(--gold-pale); padding:3rem; text-align:center; }
+  .loading-spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-bar p { color:var(--text-muted); font-size:0.9rem; }
+
+  /* MAIN */
+  .main { max-width:1200px; margin:0 auto; padding:2rem; }
+
+  /* UNIT SECTION */
+  .unit-section { margin-bottom:3rem; }
+  .unit-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem; }
+  .unit-title { display:flex; align-items:center; gap:0.75rem; }
+  .unit-title h2 { font-family:'Playfair Display',serif; font-size:1.25rem; color:var(--brown-dark); }
+  .unit-count { font-size:0.78rem; background:var(--gold-pale); color:var(--brown-mid); padding:3px 10px; border-radius:20px; font-weight:600; }
+  .btn-enviar-lote { display:flex; align-items:center; gap:0.4rem; background:var(--brown-dark); color:var(--gold-light); border:1.5px solid var(--gold); padding:0.5rem 1rem; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.18s; white-space:nowrap; }
+  .btn-enviar-lote:hover { background:var(--gold); color:var(--brown-dark); }
+  .unit-divider { height:2px; background:var(--border); margin-bottom:1.25rem; border-radius:2px; }
+  .ubadge-Sede .unit-divider, .divider-Sede { background:#1A6FA8; opacity:0.3; }
+  .divider-Centro { background:#A85F1A; opacity:0.3; }
+  .divider-Oeste { background:#1A8A2E; opacity:0.3; }
+
+  /* CARDS GRID */
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.25rem; }
+
+  /* CARD */
+  .card { background:var(--warm-white); border:1px solid var(--border); border-radius:14px; overflow:hidden; animation:fadeIn 0.35s ease both; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  .card-header { padding:1.25rem 1.25rem 0.75rem; display:flex; gap:0.85rem; align-items:flex-start; }
+  .card-avatar { width:54px; height:54px; border-radius:50%; border:2px solid var(--gold-pale); flex-shrink:0; background:var(--gold-pale); display:flex; align-items:center; justify-content:center; font-size:1.4rem; overflow:hidden; }
+  .card-avatar img { width:100%; height:100%; object-fit:cover; }
+  .card-info { flex:1; min-width:0; }
+  .card-name { font-family:'Playfair Display',serif; font-size:1rem; font-weight:600; color:var(--brown-dark); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .card-service { font-size:0.8rem; color:var(--text-muted); margin-top:2px; }
+  .card-badges { display:flex; flex-wrap:wrap; gap:4px; margin-top:5px; }
+  .card-badge { display:inline-flex; align-items:center; background:var(--gold-pale); color:var(--brown-mid); font-size:0.72rem; font-weight:600; padding:3px 9px; border-radius:20px; }
+  .ubadge { display:inline-flex; align-items:center; font-size:0.68rem; font-weight:700; padding:3px 9px; border-radius:20px; letter-spacing:0.04em; }
+  .ubadge-Sede,.ubadge-Iba\ Sede { background:#E8F4FD; color:#1A6FA8; }
+  .ubadge-Centro,.ubadge-Iba\ Centro { background:#FDF3E8; color:#A85F1A; }
+  .ubadge-Oeste,.ubadge-Iba\ Oeste { background:#EDF8EE; color:#1A8A2E; }
+
+  /* CARD BODY — descrição completa (sem clamp) */
+  .card-body { padding:0 1.25rem 0.85rem; font-size:0.83rem; color:var(--text-muted); line-height:1.6; }
+
+  /* CARD DETAILS */
+  .card-details { padding:0 1.25rem 0.85rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+  .detail-item { display:flex; gap:0.4rem; align-items:flex-start; font-size:0.78rem; color:var(--text-muted); }
+  .detail-item strong { color:var(--brown-dark); font-weight:600; white-space:nowrap; }
+
+  /* CARD FOOTER */
+  .card-footer { border-top:1px solid var(--border); padding:0.75rem 1.25rem; display:flex; align-items:center; justify-content:flex-end; gap:0.5rem; flex-wrap:wrap; }
+  .btn-contato { display:flex; align-items:center; gap:0.35rem; background:#22C55E; color:white; border:none; padding:0.4rem 0.8rem; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; text-decoration:none; transition:background 0.15s; white-space:nowrap; }
+  .btn-contato:hover { background:#16A34A; }
+  .btn-enviar { display:flex; align-items:center; gap:0.35rem; background:var(--brown-dark); color:var(--gold-light); border:1.5px solid var(--gold); padding:0.4rem 0.8rem; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+  .btn-enviar:hover { background:var(--gold); color:var(--brown-dark); }
+
+  /* EMPTY */
+  .empty-unit { color:var(--text-muted); font-size:0.85rem; padding:1rem 0; font-style:italic; }
+
+  /* FOOTER */
+  footer { background:var(--brown-dark); color:#BCA98A; text-align:center; padding:2rem; margin-top:4rem; font-size:0.82rem; border-top:2px solid var(--gold); }
+  footer strong { color:var(--gold); }
+
+  /* RESPONSIVE */
+  @media (max-width:768px) {
+    header { padding:0 1rem; }
+    .main { padding:1rem; }
+    .page-hero { padding:1.5rem 1rem 2rem; }
+    .unit-header { flex-direction:column; align-items:flex-start; }
+    .card-details { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <img class="logo-img" src="logo_iba.png" alt="Logo IBA">
+      <div class="logo-text">
+        Guia de Irmãos
+        <span>Igreja Batista do Amor · Uberlândia</span>
+      </div>
+    </a>
+    <span class="header-badge">🔒 Painel Admin</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <h1>Aprovações Pendentes</h1>
+    <p>Solicitações aguardando revisão dos responsáveis de cada unidade.</p>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="loadingBar" class="loading-bar">
+  <div class="loading-spinner"></div>
+  <p>Carregando solicitações...</p>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainContent" style="display:none">
+  <div id="unidadesSections"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>✦ <strong>Guia de Irmãos — Igreja Batista do Amor</strong> ✦</p>
+  <p style="margin-top:0.4rem">Painel administrativo · Uso interno</p>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIGURAÇÃO
+// ═══════════════════════════════════════════════
+const SHEET_ID   = '1M-CjN8et6sTCMnpBWrQbjpqj6g8xTvdH4Gc4pTSG8zw';
+const SHEET_NAME = 'Aguardando Aprovação';
+
+const RESPONSAVEIS = {
+  'Sede':   '',  // ex: '5534999990001'
+  'Centro': '',  // ex: '5534999990002'
+  'Oeste':  '',  // ex: '5534999990003'
+};
+// ═══════════════════════════════════════════════
+
+const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+const unitMap = {
+  'Sede':      { label:'🔵 Sede',   cls:'ubadge-Sede'   },
+  'Iba Sede':  { label:'🔵 Sede',   cls:'ubadge-Sede'   },
+  'Centro':    { label:'🟠 Centro', cls:'ubadge-Centro' },
+  'Iba Centro':{ label:'🟠 Centro', cls:'ubadge-Centro' },
+  'Oeste':     { label:'🟢 Oeste',  cls:'ubadge-Oeste'  },
+  'Iba Oeste': { label:'🟢 Oeste',  cls:'ubadge-Oeste'  },
+};
+
+const dividerColor = { 'Sede':'#1A6FA8', 'Centro':'#A85F1A', 'Oeste':'#1A8A2E' };
+
+function unidadeKey(u) {
+  if (!u) return '';
+  return u.replace('Iba ','').trim();
+}
+
+function limparTel(t) {
+  if (!t) return '';
+  const n = t.replace(/\D/g,'');
+  return n.startsWith('55') ? n : '55' + n;
+}
+
+// ── GERAR MENSAGEM INDIVIDUAL ──
+function gerarMensagem(p) {
+  const tel = limparTel(p.whatsapp);
+  const waLink = tel ? `https://wa.me/${tel}` : '—';
+  const linhas = [
+    `✦ *Solicitação — Guia de Irmãos*`,
+    ``,
+    `👤 *Nome:* ${p.nome}`,
+    p.servico   ? `🛠️ *Serviço:* ${p.servico}`       : null,
+    p.descricao ? `📝 *Descrição:* ${p.descricao}`    : null,
+    p.unidade   ? `⛪ *Unidade:* ${p.unidade}`        : null,
+    p.celula    ? `🙏 *Célula:* ${p.celula}`          : null,
+    p.whatsapp  ? `📱 *WhatsApp:* ${waLink}`          : null,
+    p.endereco  ? `📍 *Endereço:* ${p.endereco}`      : null,
+    p.horario   ? `🕐 *Horário:* ${p.horario}`        : null,
+    p.instagram ? `📸 *Instagram:* ${p.instagram}`    : null,
+    ``,
+    `_Aprovar este cadastro? Responda SIM ou NÃO._`,
+  ];
+  return linhas.filter(l => l !== null).join('\n');
+}
+
+// ── GERAR MENSAGEM EM LOTE ──
+function gerarMensagemLote(lista, unidade) {
+  const cabecalho = [
+    `✦ *Solicitações Pendentes — Guia de Irmãos*`,
+    `*Unidade ${unidade} · ${lista.length} solicitação${lista.length !== 1 ? 'ões' : ''}*`,
+    ``,
+  ];
+  const itens = lista.flatMap((p, i) => {
+    const tel = limparTel(p.whatsapp);
+    const waLink = tel ? `https://wa.me/${tel}` : null;
+    return [
+      `━━━━━━━━━━━━━━━━━`,
+      `*${i+1}. ${p.nome}*`,
+      p.servico   ? `🛠️ ${p.servico}`    : null,
+      waLink      ? `📱 ${waLink}`       : null,
+      p.descricao ? `📝 ${p.descricao}`  : null,
+      p.celula    ? `🙏 ${p.celula}`     : null,
+      ``,
+    ].filter(l => l !== null);
+  });
+  return [...cabecalho, ...itens, `_Responda SIM ou NÃO para cada solicitação._`].join('\n');
+}
+
+function abrirWhatsApp(numero, mensagem) {
+  if (!numero) {
+    alert('Número do responsável não configurado.\nEdite a constante RESPONSAVEIS no arquivo aprovar.html.');
+    return;
+  }
+  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+  window.open(url, '_blank');
+}
+
+// ── RENDER ──
+function renderCard(p, idx) {
+  const uk = unidadeKey(p.unidade);
+  const uc = unitMap[p.unidade] || unitMap[uk] || { label: p.unidade || '—', cls: '' };
+  const avatar = p.foto
+    ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${p.emoji||'👤'}'"/>`
+    : (p.emoji || '👤');
+  const tel = limparTel(p.whatsapp);
+
+  const details = [
+    p.celula    ? `<div class="detail-item"><strong>🙏 Célula:</strong>&nbsp;${p.celula}</div>` : '',
+    p.endereco  ? `<div class="detail-item"><strong>📍 Endereço:</strong>&nbsp;${p.endereco}</div>` : '',
+    p.horario   ? `<div class="detail-item"><strong>🕐 Horário:</strong>&nbsp;${p.horario}</div>` : '',
+    p.instagram ? `<div class="detail-item"><strong>📸 Instagram:</strong>&nbsp;${p.instagram}</div>` : '',
+  ].filter(Boolean).join('');
+
+  return `<div class="card" style="animation-delay:${idx*0.04}s">
+    <div class="card-header">
+      <div class="card-avatar">${avatar}</div>
+      <div class="card-info">
+        <div class="card-name">${p.nome}</div>
+        <div class="card-service">${p.servico||''}</div>
+        <div class="card-badges">
+          ${p.categoria ? `<span class="card-badge">📂 ${p.categoria}</span>` : ''}
+          ${uc.cls ? `<span class="ubadge ${uc.cls}">${uc.label}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    ${p.descricao ? `<div class="card-body">${p.descricao}</div>` : ''}
+    ${details ? `<div class="card-details">${details}</div>` : ''}
+    <div class="card-footer">
+      ${tel ? `<a class="btn-contato" href="https://wa.me/${tel}" target="_blank">💬 Contato</a>` : ''}
+      <button class="btn-enviar" onclick="enviarIndividual(${idx})">📤 Enviar p/ resp.</button>
+    </div>
+  </div>`;
+}
+
+let pendentes = [];
+
+function enviarIndividual(idx) {
+  const p = pendentes[idx];
+  const uk = unidadeKey(p.unidade);
+  abrirWhatsApp(RESPONSAVEIS[uk], gerarMensagem(p));
+}
+
+function enviarLote(unidade) {
+  const lista = pendentes.filter(p => unidadeKey(p.unidade) === unidade);
+  abrirWhatsApp(RESPONSAVEIS[unidade], gerarMensagemLote(lista, unidade));
+}
+
+function renderSecoes() {
+  const ordemUnidades = ['Sede', 'Centro', 'Oeste'];
+  const semUnidade = pendentes.filter(p => !unidadeKey(p.unidade));
+
+  let html = '';
+
+  ordemUnidades.forEach(u => {
+    const lista = pendentes.filter(p => unidadeKey(p.unidade) === u);
+    const uc = unitMap[u];
+    const cor = dividerColor[u] || '#888';
+    const temResponsavel = !!RESPONSAVEIS[u];
+
+    html += `<div class="unit-section">
+      <div class="unit-header">
+        <div class="unit-title">
+          <h2>${uc.label}</h2>
+          <span class="unit-count">${lista.length} pendente${lista.length !== 1 ? 's' : ''}</span>
+        </div>
+        ${lista.length > 0 ? `<button class="btn-enviar-lote" onclick="enviarLote('${u}')">📤 Enviar todas para o responsável</button>` : ''}
+      </div>
+      <div class="unit-divider" style="background:${cor};opacity:0.4"></div>`;
+
+    if (lista.length === 0) {
+      html += `<p class="empty-unit">Nenhuma solicitação pendente.</p>`;
+    } else {
+      const globalIndexes = lista.map(p => pendentes.indexOf(p));
+      html += `<div class="cards-grid">`;
+      lista.forEach((p, i) => { html += renderCard(p, globalIndexes[i]); });
+      html += `</div>`;
+    }
+    html += `</div>`;
+  });
+
+  if (semUnidade.length > 0) {
+    html += `<div class="unit-section">
+      <div class="unit-header">
+        <div class="unit-title">
+          <h2>⚠️ Sem unidade definida</h2>
+          <span class="unit-count">${semUnidade.length}</span>
+        </div>
+      </div>
+      <div class="unit-divider" style="background:#888;opacity:0.3"></div>
+      <div class="cards-grid">`;
+    semUnidade.forEach(p => { html += renderCard(p, pendentes.indexOf(p)); });
+    html += `</div></div>`;
+  }
+
+  document.getElementById('unidadesSections').innerHTML = html;
+}
+
+async function carregarDados() {
+  try {
+    const resp = await fetch(SHEET_URL);
+    const text = await resp.text();
+    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
+    const rows = json.table.rows;
+    const cols = json.table.cols.map(c => c.label.toLowerCase().trim());
+
+    pendentes = rows.map((row, i) => {
+      const obj = { id: i + 1 };
+      cols.forEach((col, j) => {
+        obj[col] = row.c[j] ? (row.c[j].v !== null ? String(row.c[j].v).trim() : '') : '';
+      });
+      return obj;
+    }).filter(p => p.nome && p.nome.length > 0);
+
+    document.getElementById('loadingBar').style.display = 'none';
+    document.getElementById('mainContent').style.display = 'block';
+    renderSecoes();
+  } catch(e) {
+    document.getElementById('loadingBar').innerHTML = `
+      <div style="text-align:center;padding:3rem;color:var(--text-muted)">
+        <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
+        <h3 style="font-family:'Playfair Display',serif;color:var(--brown-dark);margin-bottom:0.5rem">Não foi possível carregar os dados</h3>
+        <p style="font-size:0.88rem">Verifique se a aba "Aguardando Aprovação" existe e está pública para leitura.</p>
+      </div>`;
+    console.error('Erro ao carregar:', e);
+  }
+}
+
+carregarDados();
+</script>
+</body>
+</html>
