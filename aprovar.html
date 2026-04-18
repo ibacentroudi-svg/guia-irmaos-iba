@@ -78,6 +78,13 @@
   .ubadge-Sede,.ubadge-Iba\ Sede { background:#E8F4FD; color:#1A6FA8; }
   .ubadge-Centro,.ubadge-Iba\ Centro { background:#FDF3E8; color:#A85F1A; }
   .ubadge-Oeste,.ubadge-Iba\ Oeste { background:#EDF8EE; color:#1A8A2E; }
+  .sbadge { display:inline-flex; align-items:center; font-size:0.68rem; font-weight:700; padding:3px 9px; border-radius:20px; letter-spacing:0.04em; }
+  .sbadge-pendente   { background:#FEF3C7; color:#92400E; }
+  .sbadge-aguardando { background:#DBEAFE; color:#1E40AF; }
+
+  /* Card já enviado fica visualmente atenuado */
+  .card.aguardando { opacity:0.72; background:#F8F4ED; }
+  .card.aguardando:hover { opacity:1; }
 
   /* CARD BODY — descrição completa (sem clamp) */
   .card-body { padding:0 1.25rem 0.85rem; font-size:0.83rem; color:var(--text-muted); line-height:1.6; }
@@ -184,6 +191,17 @@ function unidadeKey(u) {
   return u.replace('Iba ','').trim();
 }
 
+// Normaliza o status removendo acentos e caixa para comparação consistente
+function statusKey(s) {
+  if (!s) return 'pendente';
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+}
+
+const statusMeta = {
+  'pendente':           { label:'🟡 Pendente',           cls:'sbadge-pendente'   },
+  'aguardando analise': { label:'🔵 Aguardando análise', cls:'sbadge-aguardando' },
+};
+
 function limparTel(t) {
   if (!t) return '';
   const n = t.replace(/\D/g,'');
@@ -248,6 +266,9 @@ function abrirWhatsApp(numero, mensagem) {
 function renderCard(p, idx) {
   const uk = unidadeKey(p.unidade);
   const uc = unitMap[p.unidade] || unitMap[uk] || { label: p.unidade || '—', cls: '' };
+  const sk = statusKey(p.status);
+  const sm = statusMeta[sk] || { label: `⚪ ${p.status || 'Sem status'}`, cls: '' };
+  const aguardando = sk === 'aguardando analise';
   const avatar = p.foto
     ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${p.emoji||'👤'}'"/>`
     : (p.emoji || '👤');
@@ -260,13 +281,14 @@ function renderCard(p, idx) {
     p.instagram ? `<div class="detail-item"><strong>📸 Instagram:</strong>&nbsp;${p.instagram}</div>` : '',
   ].filter(Boolean).join('');
 
-  return `<div class="card" style="animation-delay:${idx*0.04}s">
+  return `<div class="card${aguardando ? ' aguardando' : ''}" style="animation-delay:${idx*0.04}s">
     <div class="card-header">
       <div class="card-avatar">${avatar}</div>
       <div class="card-info">
         <div class="card-name">${p.nome}</div>
         <div class="card-service">${p.servico||''}</div>
         <div class="card-badges">
+          <span class="sbadge ${sm.cls}">${sm.label}</span>
           ${p.categoria ? `<span class="card-badge">📂 ${p.categoria}</span>` : ''}
           ${uc.cls ? `<span class="ubadge ${uc.cls}">${uc.label}</span>` : ''}
         </div>
@@ -358,7 +380,16 @@ async function carregarDados() {
         obj[col] = row.c[j] ? (row.c[j].v !== null ? String(row.c[j].v).trim() : '') : '';
       });
       return obj;
-    }).filter(p => p.nome && p.nome.length > 0);
+    })
+      .filter(p => p.nome && p.nome.length > 0)
+      .filter(p => statusKey(p.status) !== 'publicado')
+      .sort((a, b) => {
+        // Pendente primeiro, depois Aguardando análise, depois outros
+        const ordem = { 'pendente': 0, 'aguardando analise': 1 };
+        const oa = ordem[statusKey(a.status)] ?? 2;
+        const ob = ordem[statusKey(b.status)] ?? 2;
+        return oa - ob;
+      });
 
     document.getElementById('loadingBar').style.display = 'none';
     document.getElementById('mainContent').style.display = 'block';
