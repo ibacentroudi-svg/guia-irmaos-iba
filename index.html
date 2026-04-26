@@ -105,6 +105,10 @@
   .card-detail { display:flex; align-items:center; gap:0.3rem; font-size:0.78rem; color:var(--text-muted); }
   .whatsapp-btn { display:flex; align-items:center; gap:0.35rem; background:#22C55E; color:white; border:none; padding:0.4rem 0.8rem; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; text-decoration:none; transition:background 0.15s; white-space:nowrap; }
   .whatsapp-btn:hover { background:#16A34A; }
+  .ig-btn { display:flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:7px; font-size:0.9rem; text-decoration:none; transition:background 0.15s; flex-shrink:0; }
+  .ig-btn:not(.ig-disabled) { background:var(--gold-pale); cursor:pointer; }
+  .ig-btn:not(.ig-disabled):hover { background:var(--border); }
+  .ig-btn.ig-disabled { opacity:0.3; cursor:default; background:var(--border); }
 
   /* MODAL */
   .modal-overlay { display:none; position:fixed; inset:0; background:rgba(30,18,9,0.65); z-index:200; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(4px); }
@@ -554,7 +558,7 @@ function renderCards() {
     const avatar = p.foto
       ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${icon}'"/>`
       : icon;
-    return `<div class="card" style="animation-delay:${i*0.04}s" onclick="openModal(${p.id-1})">
+    return `<div class="card" style="animation-delay:${i*0.04}s" onclick="openModal(${prestadores.indexOf(p)})">
       <div class="card-header">
         <div class="card-avatar">${avatar}</div>
         <div class="card-info">
@@ -572,7 +576,10 @@ function renderCards() {
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           ${(p.horario||'').split(',')[0]}
         </div>
-        <a class="whatsapp-btn" href="https://wa.me/${limparTel(p.whatsapp)}" target="_blank" onclick="event.stopPropagation()">💬 WhatsApp</a>
+        <div style="display:flex;gap:0.4rem;align-items:center">
+          ${p.instagram ? `<a class="ig-btn" href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" onclick="event.stopPropagation()">📸</a>` : '<span class="ig-btn ig-disabled">📸</span>'}
+          <a class="whatsapp-btn" href="https://wa.me/${limparTel(p.whatsapp)}" target="_blank" onclick="event.stopPropagation()">💬 WhatsApp</a>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -608,7 +615,7 @@ function openModal(idx) {
   `;
   document.getElementById('mActions').innerHTML = `
     <a class="btn-primary" href="https://wa.me/${limparTel(p.whatsapp)}" target="_blank">💬 Chamar no WhatsApp</a>
-    ${p.instagram ? `<a class="btn-secondary" href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank">📸 Ver Instagram</a>` : ''}
+    ${p.instagram ? `<a class="btn-secondary" href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank">📸 Ver Instagram</a>` : '<span class="btn-secondary" style="opacity:0.45;cursor:default">📸 Instagram</span>'}
   `;
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
