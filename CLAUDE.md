@@ -15,26 +15,28 @@ The project has **two HTML pages** (no build step, no dependencies, no server):
 Both pages share the same patterns: vanilla JS, fetch from Google Sheets via the Visualization API, all state and rendering rebuilt from scratch on each change.
 
 ### `index.html` (public)
-Reads from the **`Publicados`** tab. Three layers:
-1. **Data source**: `SHEET_ID` + `SHEET_NAME = 'Publicados'`. Columns used (mapped by lowercase label): `nome`, `servico`, `descricao`, `categoria`, `unidade`, `celula`, `whatsapp`, `foto`, `emoji`, `endereco`, `horario`, `instagram`.
-2. **State & rendering**: Global state in `prestadores`, `categoriaAtiva`, `unidadeAtiva`. UI rebuilt by `renderCards()` and `renderCats()`.
-3. **Units (unidades)**: Three locations — Sede, Centro, Oeste. The spreadsheet may use short (`"Sede"`) or prefixed (`"Iba Sede"`) forms; `unidadeKey()` normalises both.
+Reads from the **`Aguardando aprovação`** tab (same tab as the admin page), filtering for `status = "Publicado"`. Marcar uma entrada como `Publicado` na planilha já a exibe no site automaticamente — não é necessário copiar para nenhuma aba separada.
+
+1. **Data source**: `SHEET_ID` + `SHEET_NAME = 'Aguardando aprovação'`. Uses the same `columnAliases` map (shared logic with `aprovar.html`) to normalise form headers to short keys: `nome`, `servico`, `descricao`, `categoria`, `unidade`, `celula`, `whatsapp`, `endereco`, `horario`, `instagram`.
+2. **Status filter**: `statusKey(p.status) === 'publicado'` — strips accents, lowercases. Only `Publicado` entries reach the public site.
+3. **State & rendering**: Global state in `prestadores`, `categoriaAtiva`, `unidadeAtiva`. UI rebuilt by `renderCards()` and `renderCats()`.
+4. **Units (unidades)**: Three locations — Sede, Centro, Oeste. The spreadsheet may use short (`"Sede"`) or prefixed (`"Iba Sede"`) forms; `unidadeKey()` normalises both.
+
+> **Note:** A aba `Publicados` existe na planilha mas não é mais usada pelo código.
 
 ### `aprovar.html` (admin)
 Reads from the **`Aguardando aprovação`** tab (lowercase `a` in "aprovação" — the gviz API is case-sensitive on tab names).
 
-- **Column aliasing**: This tab's headers come straight from the Google Form (e.g. `Seu nome completo`, `Prédio IBA que você faz parte`). A `columnAliases` map normalises them to the same short keys used by `index.html` (`nome`, `unidade`, etc.) so render logic can be shared.
-- **Status filter**: Reads the `Status` column. Entries with status `Publicado` are hidden; `Pendente` (or empty) and `Aguardando análise` are shown. `Aguardando análise` cards render dimmed. `statusKey()` strips accents and lowercases for robust matching. New form submissions get `Pendente` automatically via an Apps Script `onFormSubmit` trigger on the spreadsheet.
+- **Column aliasing**: This tab's headers come straight from the Google Form (e.g. `Seu nome completo`, `Prédio IBA que você faz parte`). The `columnAliases` map normalises them to short keys (`nome`, `unidade`, etc.). Current aliases also cover the two newer form questions: `jornada` (etapas da Jornada do Vencedor) and `frequente` (assiduidade nos cultos/células).
+- **Status filter**: Entries with status `Publicado` are hidden; `Pendente` (or empty) and `Aguardando análise` are shown. `Aguardando análise` cards render dimmed. `statusKey()` strips accents and lowercases for robust matching. New form submissions get `Pendente` automatically via an Apps Script `onFormSubmit` trigger on the spreadsheet.
 - **WhatsApp delivery**: Each card has a `📤 Enviar p/ resp.` button (sends one entry to the unit's responsável) and each unit section has a `📤 Enviar todas` button (batch). The destination numbers live in the `RESPONSAVEIS` constant at the top of the script (one per unit, with `55` country code prefix). Empty number → alert.
-
-2. **State & rendering**: Pure vanilla JS. Global state lives in three variables (`prestadores`, `categoriaAtiva`, `unidadeAtiva`). All UI is rebuilt from scratch on each filter/search change by `renderCards()` and `renderCats()`.
-
-3. **Units (unidades)**: Three church locations — Sede, Centro, Oeste. The spreadsheet may use either short form (`"Sede"`) or prefixed form (`"Iba Sede"`); `unidadeKey()` normalises both.
+- **State & rendering**: Pure vanilla JS. Global state lives in `pendentes`. All UI rebuilt from scratch on load by `renderSecoes()`.
+- **Units (unidades)**: Three church locations — Sede, Centro, Oeste. The spreadsheet may use either short form (`"Sede"`) or prefixed form (`"Iba Sede"`); `unidadeKey()` normalises both.
 
 ## Key Design Details
 
 - **Splash screen**: Shown on every load. The "Prosseguir" button stays disabled until the checkbox is checked. No localStorage persistence — it always appears.
-- **Avatar fallback**: `<img onerror>` falls back to the `emoji` field, then `'👤'`.
+- **Avatar fallback**: `<img onerror>` falls back to the category emoji via `getIcon(p.categoria)`, then `'👤'`. The `emoji` field (from the old `Publicados` tab) is checked first if present.
 - **WhatsApp links**: `limparTel()` strips non-digits and prepends `55` (Brazil country code) if not already present.
 
 ## Design System
@@ -45,7 +47,7 @@ CSS custom properties (defined in `:root`):
 
 ## Deployment
 
-No build step. Deploy by serving the HTML files as static assets (GitHub Pages, Netlify, etc.). The Google Sheet must be published publicly ("anyone with the link can view") — both the `Publicados` and `Aguardando aprovação` tabs.
+No build step. Deploy by serving the HTML files as static assets (GitHub Pages, Netlify, etc.). The Google Sheet must be published publicly ("anyone with the link can view") — the `Aguardando aprovação` tab must be public (both pages read from it).
 
 Live URLs (GitHub Pages):
 - Public: `https://ibacentroudi-svg.github.io/guia-irmaos-iba/index.html`
