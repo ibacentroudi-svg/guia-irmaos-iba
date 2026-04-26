@@ -380,13 +380,31 @@
 
 <script>
 // ═══════════════════════════════════════════════
-//  CONFIGURAÇÃO — edite apenas estas 2 linhas
+//  CONFIGURAÇÃO
 // ═══════════════════════════════════════════════
 const SHEET_ID   = '1M-CjN8et6sTCMnpBWrQbjpqj6g8xTvdH4Gc4pTSG8zw';
-const SHEET_NAME = 'Publicados';
+const SHEET_NAME = 'Aguardando aprovação';
 // ═══════════════════════════════════════════════
 
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+// Mapeia cabeçalhos do Google Form para chaves curtas
+const columnAliases = {
+  'seu nome completo':                             'nome',
+  'prédio iba que você faz parte':                 'unidade',
+  'nome da célula que você participa':             'celula',
+  'categoria que seu serviço/produto se enquadra': 'categoria',
+  'nome do serviço':                               'servico',
+  'descrição do serviço':                          'descricao',
+  'whatsapp (com ddd)':                            'whatsapp',
+  'endereço / área de atendimento':                'endereco',
+  'horário de atendimento':                        'horario',
+};
+
+function statusKey(s) {
+  if (!s) return '';
+  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+}
 
 const unitMap = {
   'Sede':      { label:'🔵 Sede',   cls:'ubadge-Sede'   },
@@ -414,7 +432,10 @@ async function carregarDados() {
     const text = await resp.text();
     const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
     const rows = json.table.rows;
-    const cols = json.table.cols.map(c => c.label.toLowerCase().trim());
+    const cols = json.table.cols.map(c => {
+      const label = c.label.toLowerCase().trim();
+      return columnAliases[label] || label;
+    });
 
     prestadores = rows.map((row, i) => {
       const obj = { id: i + 1 };
@@ -422,7 +443,8 @@ async function carregarDados() {
         obj[col] = row.c[j] ? (row.c[j].v !== null ? String(row.c[j].v).trim() : '') : '';
       });
       return obj;
-    }).filter(p => p.nome && p.nome.length > 0);
+    }).filter(p => p.nome && p.nome.length > 0)
+      .filter(p => statusKey(p.status) === 'publicado');
 
     document.getElementById('loadingBar').style.display  = 'none';
     document.getElementById('mainContent').style.display = 'grid';
@@ -528,9 +550,10 @@ function renderCards() {
 
   grid.innerHTML = filtered.map((p, i) => {
     const uc = unitMap[p.unidade] || unitMap[unidadeKey(p.unidade)] || { label: p.unidade, cls: '' };
+    const icon = p.emoji || getIcon(p.categoria) || '👤';
     const avatar = p.foto
-      ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${p.emoji||'👤'}'"/>`
-      : (p.emoji || '👤');
+      ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${icon}'"/>`
+      : icon;
     return `<div class="card" style="animation-delay:${i*0.04}s" onclick="openModal(${p.id-1})">
       <div class="card-header">
         <div class="card-avatar">${avatar}</div>
@@ -565,9 +588,10 @@ function openModal(idx) {
   const p = prestadores[idx];
   if (!p) return;
   const uc = unitMap[p.unidade] || unitMap[unidadeKey(p.unidade)] || { label: p.unidade||'', cls:'' };
+  const icon = p.emoji || getIcon(p.categoria) || '👤';
   const avatar = p.foto
-    ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${p.emoji||'👤'}'"/>`
-    : (p.emoji || '👤');
+    ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${icon}'"/>`
+    : icon;
 
   document.getElementById('mAvatar').innerHTML    = avatar;
   document.getElementById('mName').textContent    = p.nome;
