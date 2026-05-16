@@ -38,6 +38,8 @@ Reads from the **`Aguardando aprovação`** tab (lowercase `a` in "aprovação" 
 - **Splash screen**: Shown on every load. The "Prosseguir" button stays disabled until the checkbox is checked. No localStorage persistence — it always appears.
 - **Avatar fallback**: `<img onerror>` falls back to the category emoji via `getIcon(p.categoria)`, then `'👤'`. The `emoji` field (from the old `Publicados` tab) is checked first if present.
 - **WhatsApp links**: `limparTel()` strips non-digits and prepends `55` (Brazil country code) if not already present.
+- **openModal index**: Cards use `prestadores.indexOf(p)` — never `p.id - 1`. Because `prestadores` is a filtered subset of the sheet rows, the original row index (`p.id`) no longer matches the array position after filtering. Using `p.id - 1` would open the wrong card whenever any non-published row exists before the clicked one.
+- **Instagram button**: Always rendered in both the grid card footer and the modal actions. When the `instagram` field is empty the element is present but non-interactive (`.ig-btn.ig-disabled` in cards, `<span>` with `opacity:0.45;cursor:default` in the modal) — do not conditionally hide it.
 
 ## Design System
 
