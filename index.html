@@ -244,17 +244,26 @@
     transition:opacity 0.3s;
   }
   .splash-text-wrapper.scrolled-bottom::after { opacity:0; }
+  .splash-text-scroll {
+    position:relative; max-height:200px; overflow:hidden; border:1.5px solid var(--border); border-radius:8px; background:white;
+  }
+  .splash-text-scroll .scroll-track {
+    position:absolute; top:4px; right:4px; bottom:4px; width:6px;
+    background:var(--gold-pale); border-radius:3px; z-index:3;
+  }
+  .splash-text-scroll .scroll-thumb {
+    position:absolute; top:0; right:0; width:100%;
+    background:var(--brown-mid); border-radius:3px; min-height:24px;
+    transition:background 0.15s;
+  }
+  .splash-text-scroll .scroll-thumb:hover { background:var(--brown-dark); }
   .splash-text {
     font-size:0.82rem; color:#4A3520; line-height:1.6;
     max-height:200px; overflow-y:scroll; padding:0.75rem 0.85rem;
-    background:white; border:1.5px solid var(--border); border-radius:8px;
-    scrollbar-color:var(--brown-mid) var(--gold-pale);
+    padding-right:1.2rem;
+    scrollbar-width:none;
   }
-  .splash-text::-webkit-scrollbar { width:7px; -webkit-appearance:none; }
-  .splash-text::-webkit-scrollbar-track { background:var(--gold-pale); border-radius:4px; }
-  .splash-text::-webkit-scrollbar-thumb { background:var(--brown-mid); border-radius:4px; min-height:40px; }
-  .splash-text::-webkit-scrollbar-thumb:hover { background:var(--brown-dark); }
-  .splash-text { -webkit-overflow-scrolling:touch; }
+  .splash-text::-webkit-scrollbar { display:none; }
   .splash-scroll-hint {
     display:flex; align-items:center; justify-content:center; gap:0.35rem;
     font-size:0.72rem; color:#111; font-weight:600; margin-bottom:0.4rem;
@@ -306,14 +315,17 @@
     <div class="splash-body">
       <div class="splash-text-wrapper" id="splashTextWrapper">
         <div class="splash-scroll-hint">Role para ler tudo ↓</div>
-        <div class="splash-text" id="splashText">
-          Este espaço consiste em iniciativa colaborativa e voluntária de membros da Igreja Batista do Amor, criado para fortalecer nossa comunidade. Destinado exclusivamente à divulgação informal de serviços entre irmãos.<br><br>
-          A disponibilização deste ambiente não caracteriza atividade comercial da Igreja, nem implica intermediação, supervisão, indicação, certificação, recomendação ou garantia de qualquer serviço anunciado.<br><br>
-          Toda negociação, contratação, pagamento, execução, prazo, qualidade, responsabilidade civil, tributária, trabalhista ou consumerista ocorrerá diretamente entre as partes interessadas, por sua conta e risco exclusivos.<br><br>
-          A Igreja Batista do Amor não responde por danos materiais, morais, atrasos, vícios, inadimplementos, fraudes, condutas pessoais, prejuízos ou qualquer obrigação decorrente das relações estabelecidas neste ambiente.<br><br>
-          É vedado utilizar o nome, imagem ou reputação da Igreja como forma de propaganda, chancela comercial ou promessa de qualidade.<br><br>
-          A administração poderá remover anúncios ou acessos a qualquer tempo, sem necessidade de justificativa.<br><br>
-          Recomenda-se prudência, diligência e sabedoria cristã em toda negociação. 🙏
+        <div class="splash-text-scroll">
+          <div class="splash-text" id="splashText">
+            Este espaço consiste em iniciativa colaborativa e voluntária de membros da Igreja Batista do Amor, criado para fortalecer nossa comunidade. Destinado exclusivamente à divulgação informal de serviços entre irmãos.<br><br>
+            A disponibilização deste ambiente não caracteriza atividade comercial da Igreja, nem implica intermediação, supervisão, indicação, certificação, recomendação ou garantia de qualquer serviço anunciado.<br><br>
+            Toda negociação, contratação, pagamento, execução, prazo, qualidade, responsabilidade civil, tributária, trabalhista ou consumerista ocorrerá diretamente entre as partes interessadas, por sua conta e risco exclusivos.<br><br>
+            A Igreja Batista do Amor não responde por danos materiais, morais, atrasos, vícios, inadimplementos, fraudes, condutas pessoais, prejuízos ou qualquer obrigação decorrente das relações estabelecidas neste ambiente.<br><br>
+            É vedado utilizar o nome, imagem ou reputação da Igreja como forma de propaganda, chancela comercial ou promessa de qualidade.<br><br>
+            A administração poderá remover anúncios ou acessos a qualquer tempo, sem necessidade de justificativa.<br><br>
+            Recomenda-se prudência, diligência e sabedoria cristã em toda negociação. 🙏
+          </div>
+          <div class="scroll-track"><div class="scroll-thumb" id="scrollThumb"></div></div>
         </div>
       </div>
       <div class="splash-divider"></div>
@@ -666,7 +678,20 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDi
 
 // ── SPLASH SCREEN ──
 const splashTextEl = document.getElementById('splashText');
+const scrollThumb = document.getElementById('scrollThumb');
+function updateScrollThumb() {
+  const el = splashTextEl;
+  const ratio = el.clientHeight / el.scrollHeight;
+  const trackHeight = el.clientHeight - 8;
+  const thumbHeight = Math.max(24, trackHeight * ratio);
+  const scrollRange = el.scrollHeight - el.clientHeight;
+  const thumbTop = scrollRange > 0 ? (el.scrollTop / scrollRange) * (trackHeight - thumbHeight) : 0;
+  scrollThumb.style.height = thumbHeight + 'px';
+  scrollThumb.style.top = thumbTop + 'px';
+}
+updateScrollThumb();
 splashTextEl.addEventListener('scroll', function() {
+  updateScrollThumb();
   const atBottom = this.scrollHeight - this.scrollTop - this.clientHeight < 10;
   document.getElementById('splashTextWrapper').classList.toggle('scrolled-bottom', atBottom);
   if (atBottom) {
