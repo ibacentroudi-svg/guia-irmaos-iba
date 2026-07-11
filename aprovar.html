@@ -163,7 +163,7 @@
 // ═══════════════════════════════════════════════
 //  CONFIGURAÇÃO
 // ═══════════════════════════════════════════════
-const SHEET_ID   = '1M-CjN8et6sTCMnpBWrQbjpqj6g8xTvdH4Gc4pTSG8zw';
+const SHEET_ID   = '1vHifdM7VglywBGqIEE_IHNuFaN7LlXODR1zroauRzBU';
 const SHEET_NAME = 'Aguardando aprovação';
 
 const RESPONSAVEIS = {
@@ -400,7 +400,7 @@ async function carregarDados() {
       return obj;
     })
       .filter(p => p.nome && p.nome.length > 0)
-      .filter(p => statusKey(p.status) !== 'publicado')
+      .filter(p => !['publicado','teste','reprovado/incorreto'].includes(statusKey(p.status)))
       .sort((a, b) => {
         // Pendente primeiro, depois Aguardando análise, depois outros
         const ordem = { 'pendente': 0, 'aguardando analise': 1 };
