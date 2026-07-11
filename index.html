@@ -234,7 +234,11 @@
     display:block; font-family:'DM Sans',sans-serif; font-style:normal;
     font-size:0.72rem; color:var(--text-muted); margin-top:0.4rem; font-weight:500;
   }
-  .splash-text { font-size:0.82rem; color:#4A3520; line-height:1.6; margin-bottom:1rem; }
+  .splash-text { font-size:0.82rem; color:#4A3520; line-height:1.6; margin-bottom:1rem; max-height:200px; overflow-y:auto; padding-right:0.5rem; }
+  .splash-text::-webkit-scrollbar { width:5px; }
+  .splash-text::-webkit-scrollbar-track { background:var(--gold-pale); border-radius:4px; }
+  .splash-text::-webkit-scrollbar-thumb { background:var(--gold); border-radius:4px; }
+  .splash-text::-webkit-scrollbar-thumb:hover { background:#D4A44A; }
   .splash-text strong { color:var(--brown-dark); font-weight:600; }
   .splash-divider { height:1px; background:var(--border); margin-bottom:0.85rem; }
   .splash-check {
@@ -631,13 +635,21 @@ function toggleSplashBtn() {
   document.getElementById('splashBtn').disabled = !document.getElementById('splashCheck').checked;
 }
 function fecharSplash() {
+  localStorage.setItem('guia_splash_aceite', Date.now().toString());
   const overlay = document.getElementById('splashOverlay');
   overlay.classList.add('hide');
   document.body.style.overflow = '';
   setTimeout(() => { overlay.style.display = 'none'; }, 450);
 }
-// Travar scroll enquanto splash estiver aberto
-document.body.style.overflow = 'hidden';
+(function verificarSplash() {
+  const aceite = localStorage.getItem('guia_splash_aceite');
+  const UMA_HORA = 60 * 60 * 1000;
+  if (aceite && (Date.now() - Number(aceite)) < UMA_HORA) {
+    document.getElementById('splashOverlay').style.display = 'none';
+    return;
+  }
+  document.body.style.overflow = 'hidden';
+})();
 
 carregarDados();
 </script>
