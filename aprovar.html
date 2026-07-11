@@ -231,14 +231,13 @@ function gerarMensagem(p) {
     `✦ *Solicitação — Guia de Irmãos*`,
     ``,
     `👤 *Nome:* ${p.nome}`,
-    p.servico   ? `🛠️ *Serviço:* ${p.servico}`       : null,
-    p.descricao ? `📝 *Descrição:* ${p.descricao}`    : null,
-    p.unidade   ? `⛪ *Unidade:* ${p.unidade}`        : null,
-    p.celula    ? `🙏 *Célula:* ${p.celula}`          : null,
-    p.whatsapp  ? `📱 *WhatsApp:* ${waLink}`          : null,
-    p.endereco  ? `📍 *Endereço:* ${p.endereco}`      : null,
-    p.horario   ? `🕐 *Horário:* ${p.horario}`        : null,
-    p.instagram ? `📸 *Instagram:* ${p.instagram}`    : null,
+    p.servico    ? `🛠️ *Serviço:* ${p.servico}`        : null,
+    p.unidade    ? `⛪ *Unidade:* ${p.unidade}`         : null,
+    p.frequente  ? `📋 *Frequente:* ${p.frequente}`     : null,
+    p.jornada    ? `🏆 *Jornada:* ${p.jornada}`         : null,
+    p.celula     ? `🙏 *Célula:* ${p.celula}`           : null,
+    p.whatsapp   ? `📱 *WhatsApp:* ${waLink}`           : null,
+    p.instagram  ? `📸 *Instagram:* ${p.instagram}`     : null,
     ``,
     `_Aprovar este cadastro? Responda SIM ou NÃO._`,
   ];
@@ -258,10 +257,13 @@ function gerarMensagemLote(lista, unidade) {
     return [
       `━━━━━━━━━━━━━━━━━`,
       `*${i+1}. ${p.nome}*`,
-      p.servico   ? `🛠️ ${p.servico}`    : null,
-      waLink      ? `📱 ${waLink}`       : null,
-      p.descricao ? `📝 ${p.descricao}`  : null,
-      p.celula    ? `🙏 ${p.celula}`     : null,
+      p.servico    ? `🛠️ *Serviço:* ${p.servico}`      : null,
+      p.unidade    ? `⛪ *Unidade:* ${p.unidade}`       : null,
+      p.frequente  ? `📋 *Frequente:* ${p.frequente}`   : null,
+      p.jornada    ? `🏆 *Jornada:* ${p.jornada}`       : null,
+      p.celula     ? `🙏 *Célula:* ${p.celula}`         : null,
+      waLink       ? `📱 *WhatsApp:* ${waLink}`         : null,
+      p.instagram  ? `📸 *Instagram:* ${p.instagram}`   : null,
       ``,
     ].filter(l => l !== null);
   });
@@ -291,9 +293,9 @@ function renderCard(p, idx) {
 
   const details = [
     p.celula    ? `<div class="detail-item"><strong>🙏 Célula:</strong>&nbsp;${p.celula}</div>` : '',
-    p.endereco  ? `<div class="detail-item"><strong>📍 Endereço:</strong>&nbsp;${p.endereco}</div>` : '',
-    p.horario   ? `<div class="detail-item"><strong>🕐 Horário:</strong>&nbsp;${p.horario}</div>` : '',
     p.instagram ? `<div class="detail-item"><strong>📸 Instagram:</strong>&nbsp;${p.instagram}</div>` : '',
+    p.frequente ? `<div class="detail-item"><strong>📋 Frequente:</strong>&nbsp;${p.frequente}</div>` : '',
+    p.jornada   ? `<div class="detail-item"><strong>🏆 Jornada:</strong>&nbsp;${p.jornada}</div>` : '',
   ].filter(Boolean).join('');
 
   return `<div class="card${aguardando ? ' aguardando' : ''}" style="animation-delay:${idx*0.04}s">
@@ -309,7 +311,6 @@ function renderCard(p, idx) {
         </div>
       </div>
     </div>
-    ${p.descricao ? `<div class="card-body">${p.descricao}</div>` : ''}
     ${details ? `<div class="card-details">${details}</div>` : ''}
     <div class="card-footer">
       ${tel ? `<a class="btn-contato" href="https://wa.me/${tel}" target="_blank">💬 Contato</a>` : ''}
