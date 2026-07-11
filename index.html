@@ -246,7 +246,7 @@
   .splash-text-wrapper.scrolled-bottom::after { opacity:0; }
   .splash-text {
     font-size:0.82rem; color:#4A3520; line-height:1.6;
-    max-height:200px; overflow-y:auto; padding:0.75rem 0.85rem;
+    max-height:200px; overflow-y:scroll; padding:0.75rem 0.85rem;
     background:white; border:1.5px solid var(--border); border-radius:8px;
     scrollbar-color:var(--brown-mid) var(--gold-pale);
   }
@@ -256,9 +256,8 @@
   .splash-text::-webkit-scrollbar-thumb:hover { background:var(--brown-dark); }
   .splash-scroll-hint {
     display:flex; align-items:center; justify-content:center; gap:0.35rem;
-    font-size:0.75rem; color:#1a1a1a; font-weight:700; margin-top:0.5rem;
-    background:var(--gold-pale); padding:0.3rem 0.8rem; border-radius:12px;
-    border:1px solid var(--gold);
+    font-size:0.72rem; color:#111; font-weight:600; margin-top:0.4rem;
+    position:relative; z-index:2;
     animation:hintBounce 1.5s ease-in-out infinite;
     transition:opacity 0.3s;
   }
@@ -663,7 +662,10 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDi
 
 
 // ── SPLASH SCREEN ──
-document.getElementById('splashText').addEventListener('scroll', function() {
+const splashTextEl = document.getElementById('splashText');
+splashTextEl.scrollTop = 1;
+setTimeout(() => { splashTextEl.scrollTop = 0; }, 50);
+splashTextEl.addEventListener('scroll', function() {
   const atBottom = this.scrollHeight - this.scrollTop - this.clientHeight < 10;
   document.getElementById('splashTextWrapper').classList.toggle('scrolled-bottom', atBottom);
 });
