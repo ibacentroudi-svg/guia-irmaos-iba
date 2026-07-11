@@ -256,13 +256,15 @@
   .splash-text::-webkit-scrollbar-thumb:hover { background:var(--brown-dark); }
   .splash-scroll-hint {
     display:flex; align-items:center; justify-content:center; gap:0.35rem;
-    font-size:0.72rem; color:#111; font-weight:600; margin-top:0.4rem;
+    font-size:0.72rem; color:#111; font-weight:600; margin-bottom:0.4rem;
     position:relative; z-index:2;
     animation:hintBounce 1.5s ease-in-out infinite;
     transition:opacity 0.3s;
   }
   .splash-text-wrapper.scrolled-bottom .splash-scroll-hint { opacity:0; }
   @keyframes hintBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(3px)} }
+  .splash-check.disabled { opacity:0.45; pointer-events:none; }
+  .splash-check.disabled label { cursor:default; }
   .splash-text strong { color:var(--brown-dark); font-weight:600; }
   .splash-divider { height:1px; background:var(--border); margin-bottom:0.85rem; }
   .splash-check {
@@ -302,6 +304,7 @@
     </div>
     <div class="splash-body">
       <div class="splash-text-wrapper" id="splashTextWrapper">
+        <div class="splash-scroll-hint">Role para ler tudo ↓</div>
         <div class="splash-text" id="splashText">
           Este espaço consiste em iniciativa colaborativa e voluntária de membros da Igreja Batista do Amor, criado para fortalecer nossa comunidade. Destinado exclusivamente à divulgação informal de serviços entre irmãos.<br><br>
           A disponibilização deste ambiente não caracteriza atividade comercial da Igreja, nem implica intermediação, supervisão, indicação, certificação, recomendação ou garantia de qualquer serviço anunciado.<br><br>
@@ -311,11 +314,10 @@
           A administração poderá remover anúncios ou acessos a qualquer tempo, sem necessidade de justificativa.<br><br>
           Recomenda-se prudência, diligência e sabedoria cristã em toda negociação. 🙏
         </div>
-        <div class="splash-scroll-hint">Role para ler tudo ↓</div>
       </div>
       <div class="splash-divider"></div>
-      <label class="splash-check" for="splashCheck">
-        <input type="checkbox" id="splashCheck" onchange="toggleSplashBtn()">
+      <label class="splash-check disabled" id="splashCheckLabel" for="splashCheck">
+        <input type="checkbox" id="splashCheck" onchange="toggleSplashBtn()" disabled>
         <label for="splashCheck">Li e compreendi o aviso acima. Prosseguirei com sabedoria e bom testemunho.</label>
       </label>
       <button class="splash-btn" id="splashBtn" onclick="fecharSplash()" disabled>
@@ -663,11 +665,13 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalDi
 
 // ── SPLASH SCREEN ──
 const splashTextEl = document.getElementById('splashText');
-splashTextEl.scrollTop = 1;
-setTimeout(() => { splashTextEl.scrollTop = 0; }, 50);
 splashTextEl.addEventListener('scroll', function() {
   const atBottom = this.scrollHeight - this.scrollTop - this.clientHeight < 10;
   document.getElementById('splashTextWrapper').classList.toggle('scrolled-bottom', atBottom);
+  if (atBottom) {
+    document.getElementById('splashCheck').disabled = false;
+    document.getElementById('splashCheckLabel').classList.remove('disabled');
+  }
 });
 function toggleSplashBtn() {
   document.getElementById('splashBtn').disabled = !document.getElementById('splashCheck').checked;
