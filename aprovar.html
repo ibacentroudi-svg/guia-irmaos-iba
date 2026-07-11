@@ -234,7 +234,7 @@ function gerarMensagem(p) {
     p.servico    ? `🛠️ *Serviço:* ${p.servico}`        : null,
     p.unidade    ? `⛪ *Unidade:* ${p.unidade}`         : null,
     p.frequente  ? `📋 *Frequente:* ${p.frequente}`     : null,
-    p.jornada    ? `🏆 *Jornada:* ${p.jornada}`         : null,
+    p.jornada    ? `🏆 *Etapas da Jornada Vencedor concluídas:* ${p.jornada}`         : null,
     p.celula     ? `🙏 *Célula:* ${p.celula}`           : null,
     p.whatsapp   ? `📱 *WhatsApp:* ${waLink}`           : null,
     p.instagram  ? `📸 *Instagram:* ${p.instagram}`     : null,
@@ -260,7 +260,7 @@ function gerarMensagemLote(lista, unidade) {
       p.servico    ? `🛠️ *Serviço:* ${p.servico}`      : null,
       p.unidade    ? `⛪ *Unidade:* ${p.unidade}`       : null,
       p.frequente  ? `📋 *Frequente:* ${p.frequente}`   : null,
-      p.jornada    ? `🏆 *Jornada:* ${p.jornada}`       : null,
+      p.jornada    ? `🏆 *Etapas da Jornada Vencedor concluídas:* ${p.jornada}`       : null,
       p.celula     ? `🙏 *Célula:* ${p.celula}`         : null,
       waLink       ? `📱 *WhatsApp:* ${waLink}`         : null,
       p.instagram  ? `📸 *Instagram:* ${p.instagram}`   : null,
@@ -295,7 +295,7 @@ function renderCard(p, idx) {
     p.celula    ? `<div class="detail-item"><strong>🙏 Célula:</strong>&nbsp;${p.celula}</div>` : '',
     p.instagram ? `<div class="detail-item"><strong>📸 Instagram:</strong>&nbsp;${p.instagram}</div>` : '',
     p.frequente ? `<div class="detail-item"><strong>📋 Frequente:</strong>&nbsp;${p.frequente}</div>` : '',
-    p.jornada   ? `<div class="detail-item"><strong>🏆 Jornada:</strong>&nbsp;${p.jornada}</div>` : '',
+    p.jornada   ? `<div class="detail-item"><strong>🏆 Etapas da Jornada Vencedor concluídas:</strong>&nbsp;${p.jornada}</div>` : '',
   ].filter(Boolean).join('');
 
   return `<div class="card${aguardando ? ' aguardando' : ''}" style="animation-delay:${idx*0.04}s">
