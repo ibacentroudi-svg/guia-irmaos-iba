@@ -21,7 +21,7 @@
  *
  * CONFIGURAÇÃO NECESSÁRIA (Configurações do projeto → Propriedades do script):
  *   ADMIN_TOKEN       = (string aleatória longa — gere uma nova, não reaproveite exemplos)
- *   RESPONSAVEIS_JSON = {"Sede":"","Centro":"55XXXXXXXXX","Oeste":"55XXXXXXXXX"}
+ *   RESPONSAVEIS_JSON = {"Sede":"5534900000001","Centro":"5534900000002","Oeste":"5534900000003"} (exemplo — use os números reais)
  *
  * URL do admin = <url-da-implantação>?token=<valor de ADMIN_TOKEN>
  */
