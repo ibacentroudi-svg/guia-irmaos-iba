@@ -20,12 +20,14 @@ Documento de referência para qualquer pessoa que precise manter, atualizar ou e
 | Recurso | URL |
 |---------|-----|
 | **Site público** | https://ibacentroudi-svg.github.io/guia-irmaos-iba/index.html |
-| **Painel admin** | https://ibacentroudi-svg.github.io/guia-irmaos-iba/aprovar.html |
+| **Painel admin** | Não é mais uma página do site. É servido pelo Apps Script — peça a URL + token ao responsável pelo projeto, ou veja `PLANO_EXECUCAO.md` (não versionado). |
 | **Repositório GitHub** | https://github.com/ibacentroudi-svg/guia-irmaos-iba |
 | **Planilha Google** | https://docs.google.com/spreadsheets/d/1vHifdM7VglywBGqIEE_IHNuFaN7LlXODR1zroauRzBU/edit |
 | **Planilha antiga (desativada)** | https://docs.google.com/spreadsheets/d/1M-CjN8et6sTCMnpBWrQbjpqj6g8xTvdH4Gc4pTSG8zw/edit |
 
 > O formulário Google está vinculado à planilha acima. O link do formulário pode ser obtido abrindo a planilha e clicando em **Ferramentas > Gerenciar formulário**.
+>
+> **Atualizado (2026-07-26):** a planilha é **privada** desde a migração de segurança (ver seção 6). Só quem já tem acesso direto (ou o Apps Script, que executa como o proprietário) consegue abrir o link acima.
 
 ---
 
@@ -33,13 +35,18 @@ Documento de referência para qualquer pessoa que precise manter, atualizar ou e
 
 ```
 guia_irmaos/
-├── index.html        ← Site público (listagem de prestadores aprovados)
-├── aprovar.html      ← Painel admin (revisão de cadastros pendentes)
-├── logo_iba.png      ← Logotipo da igreja
-├── CLAUDE.md         ← Instruções para o Claude Code
-├── HANDOVER.md       ← Este documento
-└── .claude/          ← Configurações do Claude Code
+├── index.html            ← Site público (listagem de prestadores aprovados)
+├── logo_iba.png          ← Logotipo da igreja
+├── apps-script/
+│   ├── Code.gs           ← Backend (Google Apps Script Web App) — cópia de referência,
+│   │                        não é sincronizada automaticamente com o que está implantado
+│   └── Admin.html        ← Painel admin, servido pelo Apps Script (substitui o antigo aprovar.html)
+├── CLAUDE.md             ← Instruções para o Claude Code (não versionado)
+├── HANDOVER.md           ← Este documento
+└── .claude/              ← Configurações do Claude Code (não versionado)
 ```
+
+> **Atualizado (2026-07-26):** `aprovar.html` foi removido. O painel admin agora vive só dentro do projeto Apps Script (não faz parte deste repositório rodando no GitHub Pages) — `apps-script/Admin.html` é uma cópia de referência que precisa ser colada manualmente no editor do Apps Script depois de qualquer alteração.
 
 ---
 
@@ -47,9 +54,9 @@ guia_irmaos/
 
 ```
 Membro preenche    →   Resposta cai na    →   Admin abre       →   Admin envia via    →   Responsável
-o Google Forms         planilha (status        aprovar.html         WhatsApp para o        aprova e admin
-                       = Pendente)             e visualiza          responsável da         muda status
-                                               os pendentes         unidade                para "Publicado"
+o Google Forms         planilha (status        o painel admin       WhatsApp para o        aprova e admin
+                       = Pendente)             (Apps Script,         responsável da         muda status
+                                               URL com token)        unidade                para "Publicado"
                                                                                            na planilha
                                                                             ↓
                                                                     Prestador aparece
@@ -61,7 +68,7 @@ o Google Forms         planilha (status        aprovar.html         WhatsApp par
 
 1. **Cadastro**: O membro preenche o Google Forms com seus dados (nome, serviço, WhatsApp, etc.)
 2. **Planilha**: A resposta aparece automaticamente na aba `Aguardando aprovação` com status `Pendente`
-3. **Revisão**: O admin acessa `aprovar.html` e vê os cadastros pendentes organizados por unidade (Sede, Centro, Oeste)
+3. **Revisão**: O admin acessa a URL do painel (Apps Script, com `?token=...`) e vê os cadastros pendentes organizados por unidade (Sede, Centro, Oeste)
 4. **Envio para aprovação**: O admin clica em `📤 Enviar p/ resp.` (individual) ou `📤 Enviar todas` (lote) para enviar os dados via WhatsApp ao responsável da unidade
 5. **Aprovação**: O responsável da unidade responde SIM ou NÃO pelo WhatsApp
 6. **Publicação**: O admin muda o status na planilha para `Publicado` — o prestador aparece automaticamente no site público
@@ -73,8 +80,8 @@ o Google Forms         planilha (status        aprovar.html         WhatsApp par
 
 | Status | Onde aparece | Comportamento |
 |--------|-------------|---------------|
-| `Pendente` (ou vazio) | `aprovar.html` | Card normal, badge amarelo |
-| `Aguardando análise` | `aprovar.html` | Card esmaecido (72% opacidade), badge azul |
+| `Pendente` (ou vazio) | Painel admin | Card normal, badge amarelo |
+| `Aguardando análise` | Painel admin | Card esmaecido (72% opacidade), badge azul |
 | `Publicado` | `index.html` | Visível no site público |
 | `Teste` | Nenhum lugar | Oculto em ambas as páginas |
 | `Reprovado/Incorreto` | Nenhum lugar | Oculto em ambas as páginas |
@@ -87,7 +94,7 @@ o Google Forms         planilha (status        aprovar.html         WhatsApp par
 
 ### Aba: `Aguardando aprovação`
 
-Ambas as páginas leem desta mesma aba. O nome deve ser **exatamente** `Aguardando aprovação` (com "a" minúsculo) — a API do Google é case-sensitive.
+Tanto o endpoint público quanto o painel admin leem desta mesma aba, mas só através do backend Apps Script (`apps-script/Code.gs`) — nenhuma página HTML acessa a planilha diretamente. O nome da aba deve ser **exatamente** `Aguardando aprovação` (com "a" minúsculo).
 
 | Coluna | Cabeçalho | Chave no código | Origem |
 |--------|-----------|-----------------|--------|
@@ -248,7 +255,7 @@ Quando o admin clica em `📤 Enviar todas`, a mensagem contém os mesmos 8 camp
 
 ### Alterar campos da mensagem
 
-Editar as funções `gerarMensagem()` (individual) e `gerarMensagemLote()` (lote) em `aprovar.html`.
+Editar as funções `gerarMensagem()` (individual) e `gerarMensagemLote()` (lote) em `apps-script/Admin.html`. Depois de editar, colar o conteúdo atualizado no editor do Apps Script e implantar uma **Nova versão** (editar o arquivo aqui no repositório não atualiza o painel em produção por si só).
 
 ---
 
@@ -290,25 +297,21 @@ Editar as funções `gerarMensagem()` (individual) e `gerarMensagemLote()` (lote
 1. Mudar status para `Reprovado/Incorreto` na planilha
 2. O cadastro desaparece do painel admin automaticamente
 
-### Alterar o SHEET_ID (trocar planilha)
+### Trocar de planilha
 
-Atualizar a constante `SHEET_ID` em **ambos** os arquivos:
-- `index.html` — buscar `const SHEET_ID`
-- `aprovar.html` — buscar `const SHEET_ID`
-
-O ID está na URL da planilha: `docs.google.com/spreadsheets/d/ESTE_ID_AQUI/edit`
+**Atualizado (2026-07-26):** não existe mais um `SHEET_ID` configurável em `index.html` — o Apps Script é **vinculado** (container-bound) diretamente à planilha, então "trocar de planilha" significa recriar o projeto Apps Script vinculado à nova planilha (Extensões → Apps Script na planilha nova), colar `apps-script/Code.gs` e `apps-script/Admin.html`, reconfigurar as Script Properties (`ADMIN_TOKEN`, `RESPONSAVEIS_JSON`) e reimplantar — o que gera URLs novas, então `PUBLIC_ENDPOINT` em `index.html` também precisa ser atualizado.
 
 ### Adicionar uma nova pergunta ao formulário
 
 1. Adicionar a pergunta no Google Forms
-2. Se a nova coluna precisar ser usada no código, adicionar o mapeamento em `columnAliases`:
-   - Em `aprovar.html` — se a info for relevante para aprovação
-   - Em `index.html` — se a info for exibida no site público
-3. Adicionar a renderização nos cards/mensagens conforme necessário
+2. Se a nova coluna precisar ser usada no código, adicionar o mapeamento em `columnAliases` **dentro de `apps-script/Code.gs`** (única fonte agora — `index.html` não tem mais esse objeto)
+3. Se o campo for sensível ou só relevante pra aprovação (como `frequente`/`jornada`), garantir que ele **não** está na lista `PUBLIC_FIELDS` do `Code.gs`
+4. Adicionar a renderização nos cards/mensagens do `apps-script/Admin.html` conforme necessário
+5. Colar o `Code.gs`/`Admin.html` atualizado no editor do Apps Script e implantar uma **Nova versão** nas duas implantações
 
 ### Deploy
 
-Não há build. Basta commitar e fazer push para `main`:
+`index.html` não tem build — commit e push pra `main` atualiza o GitHub Pages em 1-3 minutos:
 
 ```bash
 git add .
@@ -316,20 +319,19 @@ git commit -m "Descrição da alteração"
 git push origin main
 ```
 
-O GitHub Pages atualiza automaticamente em 1-3 minutos.
+O backend (`apps-script/Code.gs` e `apps-script/Admin.html`) **não é publicado pelo git** — commitar aqui só guarda o histórico. Pra valer em produção, é preciso colar o conteúdo no editor do Apps Script e, em **Implantar → Gerenciar implantações**, escolher **Nova versão** e **Implantar** em cada uma das implantações existentes.
 
 ---
 
 ## 13. Detalhes Técnicos Importantes
 
-### API do Google Sheets
+### Backend (Apps Script) — como os dados chegam até a página
 
-Ambas as páginas usam a URL:
-```
-https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:json&sheet={SHEET_NAME}
-```
+**Atualizado (2026-07-26):** nenhuma página HTML fala mais direto com a API `gviz` do Google Sheets — essa abordagem foi abandonada porque exigia a planilha pública (ver `analise seguranca.md`, achado R1). Hoje:
 
-A resposta vem envolvida em `google.visualization.Query.setResponse(...)` e é extraída via regex.
+- `apps-script/Code.gs` lê a planilha internamente via `SpreadsheetApp`, filtra e devolve JSON.
+- `index.html` busca esse JSON via **JSONP** (`jsonp()`, carregando um `<script src="...&callback=...">`), **não** via `fetch()` — um `fetch()` cross-origin pra esse endpoint é bloqueado por CORS, já que `ContentService` do Apps Script não permite configurar `Access-Control-Allow-Origin`. Se for tocar nessa parte do código, mantenha o JSONP.
+- O painel admin (`apps-script/Admin.html`) é servido inteiro pelo Apps Script — os dados já chegam embutidos no HTML, sem fetch nenhum.
 
 ### Índice do Modal (index.html)
 
@@ -353,10 +355,13 @@ A função `limparTel()` remove todos os caracteres não numéricos e adiciona o
 
 | Problema | Causa provável | Solução |
 |----------|---------------|---------|
-| Site não carrega dados | Planilha não está pública | Compartilhar como "qualquer pessoa com o link" |
+| Site não carrega dados | Endpoint Apps Script fora do ar, ou implantação sem "Nova versão" após editar o código | Testar a URL do `PUBLIC_ENDPOINT` direto no navegador; deve devolver `{"dados":[...]}`. **Não** torne a planilha pública para "resolver" isso. |
 | Prestador publicado não aparece | Nome da aba errado (case-sensitive) | Verificar que a aba se chama exatamente `Aguardando aprovação` |
-| Coluna nova não aparece no código | Falta mapeamento em `columnAliases` | Adicionar o cabeçalho (em minúsculo) no objeto `columnAliases` |
+| Coluna nova não aparece no código | Falta mapeamento em `columnAliases` | Adicionar o cabeçalho (em minúsculo) no objeto `columnAliases` **em `apps-script/Code.gs`** |
 | Card abre modal errado | Uso de `p.id - 1` ao invés de `indexOf` | Usar `prestadores.indexOf(p)` |
-| WhatsApp não envia para responsável | Número vazio no `RESPONSAVEIS` | Configurar o número na constante em `aprovar.html` |
+| WhatsApp não envia para responsável | Número vazio/errado em `RESPONSAVEIS_JSON` | Configurar o número na Script Property `RESPONSAVEIS_JSON` do Apps Script (não fica mais em nenhum arquivo de código) |
+| Painel admin mostra "Acesso negado" | Token errado ou ausente na URL | Confirmar que a URL termina em `?token=` seguido do valor exato da Script Property `ADMIN_TOKEN` |
+| Painel admin quebra com "Invalid or unexpected token" no console | `https://` literal dentro de um `<script>` em `Admin.html`, truncado pelo editor do Apps Script | Reconstruir a URL a partir de fragmentos concatenados (ver constante `WA_PREFIXO`) em vez de escrever `https://` direto no código |
+| Edições em `apps-script/*` não aparecem em produção | Faltou reimplantar | No editor do Apps Script: Implantar → Gerenciar implantações → ✏️ → Versão: Nova versão → Implantar (repetir pra cada implantação) |
 | Splash aparece toda vez | localStorage limpo ou expirado | Comportamento normal — expira em 1 hora |
 | Scrollbar não aparece no mobile | CSS nativo do mobile esconde | Já resolvido com scrollbar customizada via JS |
