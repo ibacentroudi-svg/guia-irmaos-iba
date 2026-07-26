@@ -430,6 +430,7 @@
 <footer>
   <p>✦ <strong>Guia de Irmãos — Igreja Batista do Amor</strong> ✦</p>
   <p style="margin-top:0.4rem">Todos os prestadores são membros da nossa comunidade. Este guia é uma iniciativa de amor ao próximo.</p>
+  <p style="margin-top:0.6rem"><a href="privacidade.html" style="color:var(--gold-light);text-decoration:none">Política de Privacidade</a></p>
 </footer>
 
 <script>
@@ -587,29 +588,30 @@ function renderCards() {
   grid.innerHTML = filtered.map((p, i) => {
     const uc = unitMap[p.unidade] || unitMap[unidadeKey(p.unidade)] || { label: p.unidade, cls: '' };
     const icon = p.emoji || getIcon(p.categoria) || '👤';
-    const avatar = p.foto
-      ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${icon}'"/>`
+    const fotoUrl = safeUrl(p.foto);
+    const avatar = fotoUrl
+      ? `<img src="${escapeHtml(fotoUrl)}" alt="${escapeHtml(p.nome)}" onerror="this.parentElement.textContent='${icon}'"/>`
       : icon;
     return `<div class="card" style="animation-delay:${i*0.04}s" onclick="openModal(${prestadores.indexOf(p)})">
       <div class="card-header">
         <div class="card-avatar">${avatar}</div>
         <div class="card-info">
-          <div class="card-name">${p.nome}</div>
-          <div class="card-service">${p.servico||''}</div>
+          <div class="card-name">${escapeHtml(p.nome)}</div>
+          <div class="card-service">${escapeHtml(p.servico||'')}</div>
           <div class="card-badges">
-            ${p.categoria ? `<span class="card-badge">📂 ${p.categoria}</span>` : ''}
+            ${p.categoria ? `<span class="card-badge">📂 ${escapeHtml(p.categoria)}</span>` : ''}
             ${uc.cls ? `<span class="ubadge ${uc.cls}">${uc.label}</span>` : ''}
           </div>
         </div>
       </div>
-      <div class="card-body">${p.descricao||''}</div>
+      <div class="card-body">${escapeHtml(p.descricao||'')}</div>
       <div class="card-footer">
         <div class="card-detail">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${(p.horario||'').split(',')[0]}
+          ${escapeHtml((p.horario||'').split(',')[0])}
         </div>
         <div style="display:flex;gap:0.4rem;align-items:center">
-          ${p.instagram ? `<a class="ig-btn" href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" onclick="event.stopPropagation()">📸</a>` : '<span class="ig-btn ig-disabled">📸</span>'}
+          ${p.instagram ? `<a class="ig-btn" href="https://instagram.com/${escapeHtml(p.instagram.replace('@',''))}" target="_blank" onclick="event.stopPropagation()">📸</a>` : '<span class="ig-btn ig-disabled">📸</span>'}
           <a class="whatsapp-btn" href="https://wa.me/${limparTel(p.whatsapp)}" target="_blank" onclick="event.stopPropagation()">💬 WhatsApp</a>
         </div>
       </div>
@@ -623,13 +625,27 @@ function limparTel(t) {
   return n.startsWith('55') ? n : '55' + n;
 }
 
+// Escapa texto vindo da planilha/formulário antes de colocar em innerHTML — 2ª camada de
+// defesa contra XSS armazenado (o Apps Script já remove <, > e ` no servidor).
+function escapeHtml(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+// Só aceita URLs http(s) — bloqueia esquemas como javascript: em campos livres (ex.: foto).
+function safeUrl(u) {
+  return u && /^https?:\/\//i.test(u) ? u : '';
+}
+
 function openModal(idx) {
   const p = prestadores[idx];
   if (!p) return;
   const uc = unitMap[p.unidade] || unitMap[unidadeKey(p.unidade)] || { label: p.unidade||'', cls:'' };
   const icon = p.emoji || getIcon(p.categoria) || '👤';
-  const avatar = p.foto
-    ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${icon}'"/>`
+  const fotoUrl = safeUrl(p.foto);
+  const avatar = fotoUrl
+    ? `<img src="${escapeHtml(fotoUrl)}" alt="${escapeHtml(p.nome)}" onerror="this.parentElement.textContent='${icon}'"/>`
     : icon;
 
   document.getElementById('mAvatar').innerHTML    = avatar;
@@ -638,16 +654,16 @@ function openModal(idx) {
   document.getElementById('mUnitBadge').innerHTML = uc.cls ? `<span class="modal-unit ubadge ${uc.cls}">${uc.label}</span>` : '';
   document.getElementById('mDesc').textContent    = p.descricao||'';
   document.getElementById('mDetails').innerHTML   = `
-    ${p.unidade ? `<div class="detail-item"><div class="detail-icon">⛪</div><div><div class="detail-label">Unidade</div><div class="detail-value">${p.unidade}</div></div></div>` : ''}
-    ${p.celula  ? `<div class="detail-item"><div class="detail-icon">🙏</div><div><div class="detail-label">Célula</div><div class="detail-value">${p.celula}</div></div></div>` : ''}
-    ${p.categoria ? `<div class="detail-item"><div class="detail-icon">📂</div><div><div class="detail-label">Categoria</div><div class="detail-value">${p.categoria}</div></div></div>` : ''}
-    ${p.endereco ? `<div class="detail-item"><div class="detail-icon">📍</div><div><div class="detail-label">Localização</div><div class="detail-value">${p.endereco}</div></div></div>` : ''}
-    ${p.horario  ? `<div class="detail-item"><div class="detail-icon">🕐</div><div><div class="detail-label">Horário</div><div class="detail-value">${p.horario}</div></div></div>` : ''}
-    ${p.instagram? `<div class="detail-item"><div class="detail-icon">📸</div><div><div class="detail-label">Instagram</div><div class="detail-value">${p.instagram}</div></div></div>` : ''}
+    ${p.unidade ? `<div class="detail-item"><div class="detail-icon">⛪</div><div><div class="detail-label">Unidade</div><div class="detail-value">${escapeHtml(p.unidade)}</div></div></div>` : ''}
+    ${p.celula  ? `<div class="detail-item"><div class="detail-icon">🙏</div><div><div class="detail-label">Célula</div><div class="detail-value">${escapeHtml(p.celula)}</div></div></div>` : ''}
+    ${p.categoria ? `<div class="detail-item"><div class="detail-icon">📂</div><div><div class="detail-label">Categoria</div><div class="detail-value">${escapeHtml(p.categoria)}</div></div></div>` : ''}
+    ${p.endereco ? `<div class="detail-item"><div class="detail-icon">📍</div><div><div class="detail-label">Localização</div><div class="detail-value">${escapeHtml(p.endereco)}</div></div></div>` : ''}
+    ${p.horario  ? `<div class="detail-item"><div class="detail-icon">🕐</div><div><div class="detail-label">Horário</div><div class="detail-value">${escapeHtml(p.horario)}</div></div></div>` : ''}
+    ${p.instagram? `<div class="detail-item"><div class="detail-icon">📸</div><div><div class="detail-label">Instagram</div><div class="detail-value">${escapeHtml(p.instagram)}</div></div></div>` : ''}
   `;
   document.getElementById('mActions').innerHTML = `
     <a class="btn-primary" href="https://wa.me/${limparTel(p.whatsapp)}" target="_blank">💬 Chamar no WhatsApp</a>
-    ${p.instagram ? `<a class="btn-secondary" href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank">📸 Ver Instagram</a>` : '<span class="btn-secondary" style="opacity:0.45;cursor:default">📸 Instagram</span>'}
+    ${p.instagram ? `<a class="btn-secondary" href="https://instagram.com/${escapeHtml(p.instagram.replace('@',''))}" target="_blank">📸 Ver Instagram</a>` : '<span class="btn-secondary" style="opacity:0.45;cursor:default">📸 Instagram</span>'}
   `;
   document.getElementById('modalOverlay').classList.add('open');
   document.body.style.overflow = 'hidden';
