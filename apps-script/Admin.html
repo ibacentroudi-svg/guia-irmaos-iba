@@ -23,31 +23,19 @@
   html, body { overflow-x:hidden; width:100%; }
   body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--text); min-height:100vh; }
 
-  /* HEADER */
   header { background:var(--brown-dark); padding:0 2rem; position:sticky; top:0; z-index:100; border-bottom:2px solid var(--gold); }
   .header-inner { max-width:1200px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; height:70px; gap:1rem; }
-  .logo { display:flex; align-items:center; gap:0.75rem; text-decoration:none; flex-shrink:0; }
-  .logo-img { height:42px; width:auto; display:block; }
   .logo-text { font-family:'Playfair Display',serif; color:var(--cream); font-size:1.15rem; font-weight:600; line-height:1.2; }
   .logo-text span { display:block; font-size:0.65rem; font-family:'DM Sans',sans-serif; font-weight:400; color:var(--gold-light); letter-spacing:0.12em; text-transform:uppercase; }
   .header-badge { background:rgba(200,150,62,0.18); border:1px solid rgba(200,150,62,0.35); color:var(--gold-light); padding:0.35rem 0.85rem; border-radius:6px; font-size:0.78rem; font-weight:600; letter-spacing:0.04em; }
 
-  /* HERO */
   .page-hero { background:var(--brown-dark); padding:2rem 2rem 2.5rem; border-bottom:2px solid var(--gold); }
   .page-hero-inner { max-width:1200px; margin:0 auto; }
   .page-hero h1 { font-family:'Playfair Display',serif; color:var(--cream); font-size:1.6rem; font-weight:700; margin-bottom:0.3rem; }
   .page-hero p { color:#BCA98A; font-size:0.88rem; font-weight:300; }
 
-  /* LOADING */
-  .loading-bar { background:var(--gold-pale); padding:3rem; text-align:center; }
-  .loading-spinner { width:40px; height:40px; border:3px solid var(--border); border-top-color:var(--gold); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .loading-bar p { color:var(--text-muted); font-size:0.9rem; }
-
-  /* MAIN */
   .main { max-width:1200px; margin:0 auto; padding:2rem; }
 
-  /* UNIT SECTION */
   .unit-section { margin-bottom:3rem; }
   .unit-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.25rem; flex-wrap:wrap; gap:0.75rem; }
   .unit-title { display:flex; align-items:center; gap:0.75rem; }
@@ -56,14 +44,9 @@
   .btn-enviar-lote { display:flex; align-items:center; gap:0.4rem; background:var(--brown-dark); color:var(--gold-light); border:1.5px solid var(--gold); padding:0.5rem 1rem; border-radius:8px; font-family:'DM Sans',sans-serif; font-size:0.82rem; font-weight:600; cursor:pointer; transition:all 0.18s; white-space:nowrap; }
   .btn-enviar-lote:hover { background:var(--gold); color:var(--brown-dark); }
   .unit-divider { height:2px; background:var(--border); margin-bottom:1.25rem; border-radius:2px; }
-  .ubadge-Sede .unit-divider, .divider-Sede { background:#1A6FA8; opacity:0.3; }
-  .divider-Centro { background:#A85F1A; opacity:0.3; }
-  .divider-Oeste { background:#1A8A2E; opacity:0.3; }
 
-  /* CARDS GRID */
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.25rem; }
 
-  /* CARD */
   .card { background:var(--warm-white); border:1px solid var(--border); border-radius:14px; overflow:hidden; animation:fadeIn 0.35s ease both; }
   @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
   .card-header { padding:1.25rem 1.25rem 0.75rem; display:flex; gap:0.85rem; align-items:flex-start; }
@@ -82,33 +65,26 @@
   .sbadge-pendente   { background:#FEF3C7; color:#92400E; }
   .sbadge-aguardando { background:#DBEAFE; color:#1E40AF; }
 
-  /* Card já enviado fica visualmente atenuado */
   .card.aguardando { opacity:0.72; background:#F8F4ED; }
   .card.aguardando:hover { opacity:1; }
 
-  /* CARD BODY — descrição completa (sem clamp) */
   .card-body { padding:0 1.25rem 0.85rem; font-size:0.83rem; color:var(--text-muted); line-height:1.6; }
 
-  /* CARD DETAILS */
   .card-details { padding:0 1.25rem 0.85rem; display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
   .detail-item { display:flex; gap:0.4rem; align-items:flex-start; font-size:0.78rem; color:var(--text-muted); }
   .detail-item strong { color:var(--brown-dark); font-weight:600; white-space:nowrap; }
 
-  /* CARD FOOTER */
   .card-footer { border-top:1px solid var(--border); padding:0.75rem 1.25rem; display:flex; align-items:center; justify-content:flex-end; gap:0.5rem; flex-wrap:wrap; }
   .btn-contato { display:flex; align-items:center; gap:0.35rem; background:#22C55E; color:white; border:none; padding:0.4rem 0.8rem; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; text-decoration:none; transition:background 0.15s; white-space:nowrap; }
   .btn-contato:hover { background:#16A34A; }
   .btn-enviar { display:flex; align-items:center; gap:0.35rem; background:var(--brown-dark); color:var(--gold-light); border:1.5px solid var(--gold); padding:0.4rem 0.8rem; border-radius:7px; font-family:'DM Sans',sans-serif; font-size:0.78rem; font-weight:600; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
   .btn-enviar:hover { background:var(--gold); color:var(--brown-dark); }
 
-  /* EMPTY */
   .empty-unit { color:var(--text-muted); font-size:0.85rem; padding:1rem 0; font-style:italic; }
 
-  /* FOOTER */
   footer { background:var(--brown-dark); color:#BCA98A; text-align:center; padding:2rem; margin-top:4rem; font-size:0.82rem; border-top:2px solid var(--gold); }
   footer strong { color:var(--gold); }
 
-  /* RESPONSIVE */
   @media (max-width:768px) {
     header { padding:0 1rem; }
     .main { padding:1rem; }
@@ -120,21 +96,16 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
   <div class="header-inner">
-    <a class="logo" href="index.html">
-      <img class="logo-img" src="logo_iba.png" alt="Logo IBA">
-      <div class="logo-text">
-        Guia de Irmãos
-        <span>Igreja Batista do Amor · Uberlândia</span>
-      </div>
-    </a>
+    <div class="logo-text">
+      Guia de Irmãos
+      <span>Igreja Batista do Amor · Uberlândia</span>
+    </div>
     <span class="header-badge">🔒 Painel Admin</span>
   </div>
 </header>
 
-<!-- HERO -->
 <div class="page-hero">
   <div class="page-hero-inner">
     <h1>Aprovações Pendentes</h1>
@@ -142,53 +113,33 @@
   </div>
 </div>
 
-<!-- LOADING -->
-<div id="loadingBar" class="loading-bar">
-  <div class="loading-spinner"></div>
-  <p>Carregando solicitações...</p>
-</div>
-
-<!-- MAIN -->
-<div class="main" id="mainContent" style="display:none">
+<div class="main" id="mainContent">
   <div id="unidadesSections"></div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <p>✦ <strong>Guia de Irmãos — Igreja Batista do Amor</strong> ✦</p>
-  <p style="margin-top:0.4rem">Painel administrativo · Uso interno</p>
+  <p style="margin-top:0.4rem">Painel administrativo · Uso interno · Acesso restrito por login Google</p>
 </footer>
 
+<!-- DADOS EMBUTIDOS PELO SERVIDOR (nenhum fetch entre domínios).
+     Vai dentro de script type="application/json": o navegador nunca tenta
+     interpretar isso como JavaScript, então nenhum caractere dentro dos
+     cadastros (aspas, acentos, emoji, etc.) pode quebrar a sintaxe. -->
+<script type="application/json" id="dados-pendentes"><?!= dadosJson ?></script>
+<script type="application/json" id="dados-responsaveis"><?!= responsaveisJson ?></script>
+
 <script>
-// ═══════════════════════════════════════════════
-//  CONFIGURAÇÃO
-// ═══════════════════════════════════════════════
-const SHEET_ID   = '1vHifdM7VglywBGqIEE_IHNuFaN7LlXODR1zroauRzBU';
-const SHEET_NAME = 'Aguardando aprovação';
+const pendentes    = JSON.parse(document.getElementById('dados-pendentes').textContent);
+const RESPONSAVEIS = JSON.parse(document.getElementById('dados-responsaveis').textContent);
 
-const RESPONSAVEIS = {
-  'Sede':   '',              // ex: '5534999990001'
-  'Centro': '55XXXXXXXXX',
-  'Oeste':  '55XXXXXXXXX',              // ex: '5534999990003'
-};
-// ═══════════════════════════════════════════════
-
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-
-// Mapeia os cabeçalhos do Google Form para chaves curtas usadas pelo código
-const columnAliases = {
-  'seu nome completo':                          'nome',
-  'prédio iba que você faz parte':              'unidade',
-  'nome da célula que você participa':          'celula',
-  'categoria que seu serviço/produto se enquadra': 'categoria',
-  'nome do serviço':                            'servico',
-  'descrição do serviço':                       'descricao',
-  'whatsapp (com ddd)':                         'whatsapp',
-  'endereço / área de atendimento':             'endereco',
-  'horário de atendimento':                     'horario',
-  'marque quais etapas da jornada do vencedor você já concluiu ou está trilhando': 'jornada',
-  'você se considera frequente e assíduo nos cultos e células?': 'frequente',
-};
+// Escapa qualquer texto vindo do formulário antes de colocar em innerHTML (defesa em profundidade;
+// o servidor já removeu <, > e ` antes de enviar, isto é uma 2ª camada).
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
 
 const unitMap = {
   'Sede':      { label:'🔵 Sede',   cls:'ubadge-Sede'   },
@@ -206,10 +157,9 @@ function unidadeKey(u) {
   return u.replace('Iba ','').trim();
 }
 
-// Normaliza o status removendo acentos e caixa para comparação consistente
 function statusKey(s) {
   if (!s) return 'pendente';
-  return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
 }
 
 const statusMeta = {
@@ -218,15 +168,16 @@ const statusMeta = {
 };
 
 function limparTel(t) {
-  if (!t) return '';
-  const n = t.replace(/\D/g,'');
+  const n = (t || '').replace(/\D/g, '');
+  if (n.length < 10) return '';
   return n.startsWith('55') ? n : '55' + n;
 }
 
-// ── GERAR MENSAGEM INDIVIDUAL ──
+const WA_PREFIXO = 'https:' + '/' + '/wa.me/'; // barras separadas: evita truncamento por ferramentas que tratam "//" como comentário dentro de strings
+
 function gerarMensagem(p) {
   const tel = limparTel(p.whatsapp);
-  const waLink = tel ? `https://wa.me/${tel}` : '—';
+  const waLink = tel ? (WA_PREFIXO + tel) : '—';
   const linhas = [
     `✦ *Solicitação — Guia de Irmãos*`,
     ``,
@@ -234,7 +185,7 @@ function gerarMensagem(p) {
     p.servico    ? `🛠️ *Serviço:* ${p.servico}`        : null,
     p.unidade    ? `⛪ *Unidade:* ${p.unidade}`         : null,
     p.frequente  ? `📋 *Frequente:* ${p.frequente}`     : null,
-    p.jornada    ? `🏆 *Etapas da Jornada Vencedor concluídas:* ${p.jornada}`         : null,
+    p.jornada    ? `🏆 *Etapas da Jornada Vencedor concluídas:* ${p.jornada}` : null,
     p.celula     ? `🙏 *Célula:* ${p.celula}`           : null,
     p.whatsapp   ? `📱 *WhatsApp:* ${waLink}`           : null,
     p.instagram  ? `📸 *Instagram:* ${p.instagram}`     : null,
@@ -244,7 +195,6 @@ function gerarMensagem(p) {
   return linhas.filter(l => l !== null).join('\n');
 }
 
-// ── GERAR MENSAGEM EM LOTE ──
 function gerarMensagemLote(lista, unidade) {
   const cabecalho = [
     `✦ *Solicitações Pendentes — Guia de Irmãos*`,
@@ -253,14 +203,14 @@ function gerarMensagemLote(lista, unidade) {
   ];
   const itens = lista.flatMap((p, i) => {
     const tel = limparTel(p.whatsapp);
-    const waLink = tel ? `https://wa.me/${tel}` : null;
+    const waLink = tel ? (WA_PREFIXO + tel) : null;
     return [
       `━━━━━━━━━━━━━━━━━`,
       `*${i+1}. ${p.nome}*`,
       p.servico    ? `🛠️ *Serviço:* ${p.servico}`      : null,
       p.unidade    ? `⛪ *Unidade:* ${p.unidade}`       : null,
       p.frequente  ? `📋 *Frequente:* ${p.frequente}`   : null,
-      p.jornada    ? `🏆 *Etapas da Jornada Vencedor concluídas:* ${p.jornada}`       : null,
+      p.jornada    ? `🏆 *Etapas da Jornada Vencedor concluídas:* ${p.jornada}` : null,
       p.celula     ? `🙏 *Célula:* ${p.celula}`         : null,
       waLink       ? `📱 *WhatsApp:* ${waLink}`         : null,
       p.instagram  ? `📸 *Instagram:* ${p.instagram}`   : null,
@@ -272,54 +222,52 @@ function gerarMensagemLote(lista, unidade) {
 
 function abrirWhatsApp(numero, mensagem) {
   if (!numero) {
-    alert('Número do responsável não configurado.\nEdite a constante RESPONSAVEIS no arquivo aprovar.html.');
+    alert('Número do responsável não configurado.\nEdite a Script Property RESPONSAVEIS_JSON no Apps Script.');
     return;
   }
-  const url = `https://wa.me/${numero}?text=${encodeURIComponent(mensagem)}`;
+  const url = WA_PREFIXO + numero + '?text=' + encodeURIComponent(mensagem);
   window.open(url, '_blank');
 }
 
-// ── RENDER ──
 function renderCard(p, idx) {
   const uk = unidadeKey(p.unidade);
   const uc = unitMap[p.unidade] || unitMap[uk] || { label: p.unidade || '—', cls: '' };
   const sk = statusKey(p.status);
-  const sm = statusMeta[sk] || { label: `⚪ ${p.status || 'Sem status'}`, cls: '' };
+  const sm = statusMeta[sk] || { label: `⚪ ${escapeHtml(p.status || 'Sem status')}`, cls: '' };
   const aguardando = sk === 'aguardando analise';
   const avatar = p.foto
-    ? `<img src="${p.foto}" alt="${p.nome}" onerror="this.parentElement.textContent='${p.emoji||'👤'}'"/>`
+    ? `<img src="${escapeHtml(p.foto)}" alt="${escapeHtml(p.nome)}" onerror="this.parentElement.textContent='${p.emoji||'👤'}'"/>`
     : (p.emoji || '👤');
   const tel = limparTel(p.whatsapp);
+  const waHref = tel ? (WA_PREFIXO + tel) : '';
 
   const details = [
-    p.celula    ? `<div class="detail-item"><strong>🙏 Célula:</strong>&nbsp;${p.celula}</div>` : '',
-    p.instagram ? `<div class="detail-item"><strong>📸 Instagram:</strong>&nbsp;${p.instagram}</div>` : '',
-    p.frequente ? `<div class="detail-item"><strong>📋 Frequente:</strong>&nbsp;${p.frequente}</div>` : '',
-    p.jornada   ? `<div class="detail-item"><strong>🏆 Etapas da Jornada Vencedor concluídas:</strong>&nbsp;${p.jornada}</div>` : '',
+    p.celula    ? `<div class="detail-item"><strong>🙏 Célula:</strong>&nbsp;${escapeHtml(p.celula)}</div>` : '',
+    p.instagram ? `<div class="detail-item"><strong>📸 Instagram:</strong>&nbsp;${escapeHtml(p.instagram)}</div>` : '',
+    p.frequente ? `<div class="detail-item"><strong>📋 Frequente:</strong>&nbsp;${escapeHtml(p.frequente)}</div>` : '',
+    p.jornada   ? `<div class="detail-item"><strong>🏆 Etapas da Jornada Vencedor concluídas:</strong>&nbsp;${escapeHtml(p.jornada)}</div>` : '',
   ].filter(Boolean).join('');
 
   return `<div class="card${aguardando ? ' aguardando' : ''}" style="animation-delay:${idx*0.04}s">
     <div class="card-header">
       <div class="card-avatar">${avatar}</div>
       <div class="card-info">
-        <div class="card-name">${p.nome}</div>
-        <div class="card-service">${p.servico||''}</div>
+        <div class="card-name">${escapeHtml(p.nome)}</div>
+        <div class="card-service">${escapeHtml(p.servico||'')}</div>
         <div class="card-badges">
           <span class="sbadge ${sm.cls}">${sm.label}</span>
-          ${p.categoria ? `<span class="card-badge">📂 ${p.categoria}</span>` : ''}
+          ${p.categoria ? `<span class="card-badge">📂 ${escapeHtml(p.categoria)}</span>` : ''}
           ${uc.cls ? `<span class="ubadge ${uc.cls}">${uc.label}</span>` : ''}
         </div>
       </div>
     </div>
     ${details ? `<div class="card-details">${details}</div>` : ''}
     <div class="card-footer">
-      ${tel ? `<a class="btn-contato" href="https://wa.me/${tel}" target="_blank">💬 Contato</a>` : ''}
+      ${waHref ? `<a class="btn-contato" href="${waHref}" target="_blank">💬 Contato</a>` : ''}
       <button class="btn-enviar" onclick="enviarIndividual(${idx})">📤 Enviar p/ resp.</button>
     </div>
   </div>`;
 }
-
-let pendentes = [];
 
 function enviarIndividual(idx) {
   const p = pendentes[idx];
@@ -342,7 +290,6 @@ function renderSecoes() {
     const lista = pendentes.filter(p => unidadeKey(p.unidade) === u);
     const uc = unitMap[u];
     const cor = dividerColor[u] || '#888';
-    const temResponsavel = !!RESPONSAVEIS[u];
 
     html += `<div class="unit-section">
       <div class="unit-header">
@@ -382,49 +329,7 @@ function renderSecoes() {
   document.getElementById('unidadesSections').innerHTML = html;
 }
 
-async function carregarDados() {
-  try {
-    const resp = await fetch(SHEET_URL);
-    const text = await resp.text();
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-    const rows = json.table.rows;
-    const cols = json.table.cols.map(c => {
-      const label = c.label.toLowerCase().trim();
-      return columnAliases[label] || label;
-    });
-
-    pendentes = rows.map((row, i) => {
-      const obj = { id: i + 1 };
-      cols.forEach((col, j) => {
-        obj[col] = row.c[j] ? (row.c[j].v !== null ? String(row.c[j].v).trim() : '') : '';
-      });
-      return obj;
-    })
-      .filter(p => p.nome && p.nome.length > 0)
-      .filter(p => !['publicado','teste','reprovado/incorreto'].includes(statusKey(p.status)))
-      .sort((a, b) => {
-        // Pendente primeiro, depois Aguardando análise, depois outros
-        const ordem = { 'pendente': 0, 'aguardando analise': 1 };
-        const oa = ordem[statusKey(a.status)] ?? 2;
-        const ob = ordem[statusKey(b.status)] ?? 2;
-        return oa - ob;
-      });
-
-    document.getElementById('loadingBar').style.display = 'none';
-    document.getElementById('mainContent').style.display = 'block';
-    renderSecoes();
-  } catch(e) {
-    document.getElementById('loadingBar').innerHTML = `
-      <div style="text-align:center;padding:3rem;color:var(--text-muted)">
-        <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
-        <h3 style="font-family:'Playfair Display',serif;color:var(--brown-dark);margin-bottom:0.5rem">Não foi possível carregar os dados</h3>
-        <p style="font-size:0.88rem">Verifique se a aba "Aguardando Aprovação" existe e está pública para leitura.</p>
-      </div>`;
-    console.error('Erro ao carregar:', e);
-  }
-}
-
-carregarDados();
+renderSecoes();
 </script>
 </body>
 </html>

@@ -436,29 +436,8 @@
 // ═══════════════════════════════════════════════
 //  CONFIGURAÇÃO
 // ═══════════════════════════════════════════════
-const SHEET_ID   = '1vHifdM7VglywBGqIEE_IHNuFaN7LlXODR1zroauRzBU';
-const SHEET_NAME = 'Aguardando aprovação';
+const PUBLIC_ENDPOINT = 'https://script.google.com/macros/s/AKfycbyGP3jyJjccx6zShajntQPVMUvYcJW3D55A2suram8K8rIfpBvBarDadYrb_tHytO0MoQ/exec';
 // ═══════════════════════════════════════════════
-
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
-
-// Mapeia cabeçalhos do Google Form para chaves curtas
-const columnAliases = {
-  'seu nome completo':                             'nome',
-  'prédio iba que você faz parte':                 'unidade',
-  'nome da célula que você participa':             'celula',
-  'categoria que seu serviço/produto se enquadra': 'categoria',
-  'nome do serviço':                               'servico',
-  'descrição do serviço':                          'descricao',
-  'whatsapp (com ddd)':                            'whatsapp',
-  'endereço / área de atendimento':                'endereco',
-  'horário de atendimento':                        'horario',
-};
-
-function statusKey(s) {
-  if (!s) return '';
-  return s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
-}
 
 const unitMap = {
   'Sede':      { label:'🔵 Sede',   cls:'ubadge-Sede'   },
@@ -479,26 +458,29 @@ let prestadores    = [];
 let categoriaAtiva = 'Todas';
 let unidadeAtiva   = 'Todas';
 
-// ── CARREGAR DADOS DO GOOGLE SHEETS ──
+// ── CARREGAR DADOS DO ENDPOINT PÚBLICO (Apps Script, via JSONP) ──
+// Apps Script (ContentService) não permite configurar Access-Control-Allow-Origin,
+// então fetch() de outro domínio é bloqueado por CORS. Carregar via <script src>
+// (JSONP) não sofre essa restrição.
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const cbName = 'jsonpCb' + Date.now();
+    const script = document.createElement('script');
+    window[cbName] = (data) => {
+      resolve(data);
+      delete window[cbName];
+      script.remove();
+    };
+    script.onerror = () => { delete window[cbName]; reject(new Error('Falha ao carregar JSONP')); };
+    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+    document.body.appendChild(script);
+  });
+}
+
 async function carregarDados() {
   try {
-    const resp = await fetch(SHEET_URL);
-    const text = await resp.text();
-    const json = JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*?)\);/)[1]);
-    const rows = json.table.rows;
-    const cols = json.table.cols.map(c => {
-      const label = c.label.toLowerCase().trim();
-      return columnAliases[label] || label;
-    });
-
-    prestadores = rows.map((row, i) => {
-      const obj = { id: i + 1 };
-      cols.forEach((col, j) => {
-        obj[col] = row.c[j] ? (row.c[j].v !== null ? String(row.c[j].v).trim() : '') : '';
-      });
-      return obj;
-    }).filter(p => p.nome && p.nome.length > 0)
-      .filter(p => statusKey(p.status) === 'publicado');
+    const json = await jsonp(PUBLIC_ENDPOINT);
+    prestadores = json.dados || [];
 
     document.getElementById('loadingBar').style.display  = 'none';
     document.getElementById('mainContent').style.display = 'grid';
@@ -511,7 +493,7 @@ async function carregarDados() {
       <div class="empty-state">
         <div class="empty-icon">⚠️</div>
         <h3>Não foi possível carregar os dados</h3>
-        <p>Verifique se a planilha está pública para leitura e tente novamente.</p>
+        <p>Tente novamente em alguns instantes.</p>
       </div>`;
     console.error('Erro ao carregar:', e);
   }
