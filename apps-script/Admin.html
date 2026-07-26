@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aprovações Pendentes — Guia de Irmãos</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; base-uri 'self';">
+<!-- Mantém o Google Fonts CDN aqui (diferente do index.html): este painel só é aberto pelo
+     admin autenticado por token, então o vazamento de IP do R9 não se aplica ao público em
+     geral, e auto-hospedar fontes dentro do Apps Script exigiria embutir os arquivos em base64. -->
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -175,6 +179,11 @@ function limparTel(t) {
 
 const WA_PREFIXO = 'https:' + '/' + '/wa.me/'; // barras separadas: evita truncamento por ferramentas que tratam "//" como comentário dentro de strings
 
+// Só aceita URLs http(s) — bloqueia esquemas como javascript: em campos livres (ex.: foto).
+function safeUrl(u) {
+  return u && /^https?:\/\//i.test(u) ? u : '';
+}
+
 function gerarMensagem(p) {
   const tel = limparTel(p.whatsapp);
   const waLink = tel ? (WA_PREFIXO + tel) : '—';
@@ -235,8 +244,9 @@ function renderCard(p, idx) {
   const sk = statusKey(p.status);
   const sm = statusMeta[sk] || { label: `⚪ ${escapeHtml(p.status || 'Sem status')}`, cls: '' };
   const aguardando = sk === 'aguardando analise';
-  const avatar = p.foto
-    ? `<img src="${escapeHtml(p.foto)}" alt="${escapeHtml(p.nome)}" onerror="this.parentElement.textContent='${p.emoji||'👤'}'"/>`
+  const fotoUrl = safeUrl(p.foto);
+  const avatar = fotoUrl
+    ? `<img src="${escapeHtml(fotoUrl)}" alt="${escapeHtml(p.nome)}" onerror="this.parentElement.textContent='${p.emoji||'👤'}'"/>`
     : (p.emoji || '👤');
   const tel = limparTel(p.whatsapp);
   const waHref = tel ? (WA_PREFIXO + tel) : '';
