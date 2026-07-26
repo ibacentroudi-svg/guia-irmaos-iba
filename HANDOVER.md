@@ -126,7 +126,7 @@ const columnAliases = {
 
 ### Requisitos da planilha
 
-- Deve estar **publicada** como "qualquer pessoa com o link pode ver"
+- **Atualizado (2026-07-26):** a planilha agora é **privada**. Só o Apps Script (executando como o proprietário) precisa acessá-la — não a torne pública de novo, isso reabriria a vulnerabilidade R1 da auditoria de segurança.
 - A aba deve se chamar exatamente `Aguardando aprovação`
 - A coluna `Status` deve existir (é preenchida manualmente, não vem do formulário)
 - Recomenda-se ter um trigger `onFormSubmit` no Apps Script para preencher status = `Pendente` automaticamente em novas submissões
@@ -140,25 +140,17 @@ O projeto suporta 3 unidades da igreja:
 | Unidade | Cor | Emoji | Responsável WhatsApp |
 |---------|-----|-------|---------------------|
 | Sede | Azul (#1A6FA8) | 🔵 | _(não configurado)_ |
-| Centro | Laranja (#A85F1A) | 🟠 | 55XXXXXXXXX |
-| Oeste | Verde (#1A8A2E) | 🟢 | 55XXXXXXXXX |
+| Centro | Laranja (#A85F1A) | 🟠 | _(ver Script Properties do Apps Script)_ |
+| Oeste | Verde (#1A8A2E) | 🟢 | _(ver Script Properties do Apps Script)_ |
 
 ### Adicionar/alterar número do responsável
 
-Editar a constante `RESPONSAVEIS` no início do script em `aprovar.html`:
-
-```javascript
-const RESPONSAVEIS = {
-  'Sede':   '5534999990001',     // ← número com código do país (55) + DDD
-  'Centro': '55XXXXXXXXX',
-  'Oeste':  '55XXXXXXXXX',
-};
-```
+> **Atualizado (2026-07-26):** `aprovar.html` foi removido e substituído por um painel servido pelo Apps Script (`apps-script/Admin.html`), protegido por token. Os números dos responsáveis não ficam mais no código — vivem na Script Property `RESPONSAVEIS_JSON`, editável em **Apps Script → Configurações do projeto → Propriedades do script**. Ver `apps-script/Code.gs` e `PLANO_EXECUCAO.md`/`SPEC_SEGURANCA.md` (não versionados, só locais) para o histórico completo dessa migração.
 
 ### Adicionar nova unidade
 
-1. Adicionar a nova unidade ao objeto `unitMap` em **ambos os arquivos** (`index.html` e `aprovar.html`)
-2. Adicionar o número do responsável em `RESPONSAVEIS` (`aprovar.html`)
+1. Adicionar a nova unidade ao objeto `unitMap` em `index.html` e em `apps-script/Admin.html`
+2. Adicionar o número do responsável na Script Property `RESPONSAVEIS_JSON`
 3. Adicionar cor CSS para os badges da nova unidade
 
 ---
