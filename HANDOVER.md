@@ -8,9 +8,9 @@ Documento de referência para qualquer pessoa que precise manter, atualizar ou e
 
 **Guia de Irmãos** é um diretório de prestadores de serviço da Igreja Batista do Amor (IBA), Uberlândia/MG. Membros da igreja divulgam seus serviços e outros membros podem encontrá-los e contatá-los.
 
-- **Tipo**: Site estático (HTML + CSS + JS vanilla). Sem build, sem dependências, sem servidor.
-- **Hospedagem**: GitHub Pages
-- **Dados**: Google Sheets (via Google Visualization API)
+- **Tipo**: Site estático (HTML + CSS + JS vanilla) no front-end. Sem build, sem dependências no front-end.
+- **Hospedagem**: GitHub Pages (front-end) + Google Apps Script (backend, planilha e painel admin)
+- **Dados**: Google Sheets, lida por um backend Apps Script (privada — nenhuma página HTML acessa a planilha diretamente; ver seção 6)
 - **Cadastro**: Google Forms
 
 ---
@@ -20,6 +20,7 @@ Documento de referência para qualquer pessoa que precise manter, atualizar ou e
 | Recurso | URL |
 |---------|-----|
 | **Site público** | https://ibacentroudi-svg.github.io/guia-irmaos-iba/index.html |
+| **Política de Privacidade** | https://ibacentroudi-svg.github.io/guia-irmaos-iba/privacidade.html (linkada no rodapé do site) |
 | **Painel admin** | Não é mais uma página do site. É servido pelo Apps Script — peça a URL + token ao responsável pelo projeto, ou veja `PLANO_EXECUCAO.md` (não versionado). |
 | **Repositório GitHub** | https://github.com/ibacentroudi-svg/guia-irmaos-iba |
 | **Planilha Google** | https://docs.google.com/spreadsheets/d/1vHifdM7VglywBGqIEE_IHNuFaN7LlXODR1zroauRzBU/edit |
@@ -36,6 +37,9 @@ Documento de referência para qualquer pessoa que precise manter, atualizar ou e
 ```
 guia_irmaos/
 ├── index.html            ← Site público (listagem de prestadores aprovados)
+├── privacidade.html      ← Política de Privacidade (LGPD), linkada no rodapé de index.html
+├── fonts/                ← Playfair Display + DM Sans self-hospedadas (.woff2), usadas por
+│                             index.html e privacidade.html — não carregam mais de fonts.googleapis.com
 ├── logo_iba.png          ← Logotipo da igreja
 ├── apps-script/
 │   ├── Code.gs           ← Backend (Google Apps Script Web App) — cópia de referência,
@@ -47,6 +51,8 @@ guia_irmaos/
 ```
 
 > **Atualizado (2026-07-26):** `aprovar.html` foi removido. O painel admin agora vive só dentro do projeto Apps Script (não faz parte deste repositório rodando no GitHub Pages) — `apps-script/Admin.html` é uma cópia de referência que precisa ser colada manualmente no editor do Apps Script depois de qualquer alteração.
+>
+> **Atualizado (2026-07-29):** o histórico do Git foi reescrito uma vez (`git filter-repo`) para remover `CLAUDE.md`, `.claude/` e dois números de telefone reais que tinham ficado expostos em commits antigos. O conteúdo atual dos arquivos não mudou — só commits anteriores foram limpos. Se algum colaborador tiver um clone antigo, ele vai precisar re-clonar (o histórico local dele não vai mais bater com o remoto).
 
 ---
 
@@ -137,6 +143,18 @@ const columnAliases = {
 - A aba deve se chamar exatamente `Aguardando aprovação`
 - A coluna `Status` deve existir (é preenchida manualmente, não vem do formulário)
 - Recomenda-se ter um trigger `onFormSubmit` no Apps Script para preencher status = `Pendente` automaticamente em novas submissões
+
+### Consentimento para dado sensível (LGPD)
+
+**Adicionado em 2026-07-29:** as colunas `frequente` e `jornada` (frequência em cultos/células e etapas da Jornada do Vencedor) revelam prática religiosa e são tratadas como dado pessoal **sensível** pela LGPD. O Google Form tem uma pergunta de consentimento específico, colocada **antes** dessas duas perguntas:
+
+- Tipo **Múltipla escolha** (não checkbox — o recurso "ir para seção com base na resposta" do Google Forms só funciona com múltipla escolha/lista suspensa, não com caixa de seleção).
+- Opções: "Sim, autorizo" / "Não autorizo".
+- Quem marca "Não autorizo" é direcionado para uma seção que **encerra o formulário**, explicando que sem esse dado não é possível avaliar o cadastro, com opção de responder de novo mais tarde.
+- Configuração adicional: "Limitar a 1 resposta" ativado em Configurações → Respostas, o que exige login Google para responder (mitigação extra contra spam/abuso).
+- Ver detalhes em `privacidade.html` (seção "Quais dados coletamos e por quê").
+
+Se for editar essa pergunta no Form, mantenha o tipo "Múltipla escolha" e a lógica de "ir para seção" — trocar para checkbox silenciosamente desativa o redirecionamento.
 
 ---
 
@@ -281,6 +299,8 @@ Editar as funções `gerarMensagem()` (individual) e `gerarMensagemLote()` (lote
 - **Playfair Display** (serif) — títulos, destaques
 - **DM Sans** (sans-serif) — corpo, interface
 
+> **Atualizado (2026-07-29):** em `index.html` e `privacidade.html`, as fontes são **self-hospedadas** em `/fonts/*.woff2` via `@font-face` inline — não há mais `<link>` para `fonts.googleapis.com` nessas duas páginas (evita vazar o IP do visitante ao Google). Os arquivos foram baixados direto da API do Google Fonts com `curl`, cobrindo os pesos já usados (Playfair 400/600/700, DM Sans 300/400/500/600). `apps-script/Admin.html` é a **exceção deliberada**: continua usando o CDN do Google Fonts, porque essa página só é aberta pelo admin autenticado (não pelo público em geral) e self-hospedar dentro do Apps Script exigiria embutir os arquivos em base64 no HTML.
+
 ---
 
 ## 12. Como Fazer Alterações Comuns
@@ -347,7 +367,23 @@ A planilha pode ter `"Sede"` ou `"Iba Sede"`. A função `unidadeKey()` normaliz
 
 ### WhatsApp — Formatação do Número
 
-A função `limparTel()` remove todos os caracteres não numéricos e adiciona o prefixo `55` (Brasil) se não estiver presente.
+A função `limparTel()` remove todos os caracteres não numéricos e adiciona o prefixo `55` (Brasil) se não estiver presente. **Atualizado (2026-07-29):** se o número tiver menos de 10 dígitos (vazio, incompleto), a função agora retorna `''` em vez de gerar um link quebrado tipo `wa.me/55`. Quem chama `limparTel()` precisa checar esse retorno vazio e mostrar o botão de WhatsApp desabilitado — mesmo padrão visual já usado para Instagram vazio.
+
+### Proteção contra XSS (dados vindos do formulário)
+
+Como o formulário é aberto ao público, qualquer campo de texto pode conter tentativas de injeção de código. Duas camadas de defesa:
+
+1. **Servidor** (`apps-script/Code.gs`, função `sanitize_()`): remove `<`, `>` e `` ` `` de todo campo antes de sair do backend.
+2. **Cliente** (`index.html` e `apps-script/Admin.html`, função `escapeHtml()`): qualquer campo interpolado dentro de `innerHTML` passa por essa função antes de ir para a tela. Ao adicionar um novo campo à interface, sempre usar `escapeHtml(campo)` em vez de `campo` puro.
+
+A URL da foto do prestador (`p.foto`) passa também por `safeUrl()`, que só aceita endereços `http(s)://` — bloqueia tentativas de usar `javascript:` no campo.
+
+### Content-Security-Policy (CSP)
+
+`index.html`, `privacidade.html` e `apps-script/Admin.html` têm uma tag `<meta http-equiv="Content-Security-Policy">` no `<head>`. Dois detalhes não óbvios, descobertos testando em produção:
+
+- **`frame-ancestors` não funciona via `<meta>`** — só é respeitado pelo navegador quando vem como cabeçalho HTTP real, e o GitHub Pages puro não permite configurar cabeçalhos customizados. Por isso essa diretiva não está na política.
+- **`script-src` precisa de `'unsafe-inline'`** — o projeto mantém todo o JavaScript dentro do próprio arquivo HTML (sem `.js` externo), então bloquear scripts inline quebraria o site inteiro. A proteção real contra XSS continua sendo o `escapeHtml()`, não a CSP.
 
 ---
 
@@ -363,5 +399,7 @@ A função `limparTel()` remove todos os caracteres não numéricos e adiciona o
 | Painel admin mostra "Acesso negado" | Token errado ou ausente na URL | Confirmar que a URL termina em `?token=` seguido do valor exato da Script Property `ADMIN_TOKEN` |
 | Painel admin quebra com "Invalid or unexpected token" no console | `https://` literal dentro de um `<script>` em `Admin.html`, truncado pelo editor do Apps Script | Reconstruir a URL a partir de fragmentos concatenados (ver constante `WA_PREFIXO`) em vez de escrever `https://` direto no código |
 | Edições em `apps-script/*` não aparecem em produção | Faltou reimplantar | No editor do Apps Script: Implantar → Gerenciar implantações → ✏️ → Versão: Nova versão → Implantar (repetir pra cada implantação) |
+| Fontes não carregam / texto aparece em fonte padrão do sistema | Arquivos `/fonts/*.woff2` ausentes ou caminho errado | Confirmar que a pasta `fonts/` foi publicada junto (não está no `.gitignore`) e que os nomes batem com o `@font-face` no `<style>` |
+| Console mostra erro de CSP bloqueando um recurso | Novo domínio externo adicionado sem atualizar a política | Adicionar o domínio na diretiva certa (`script-src`, `style-src`, `img-src`, etc.) na tag `<meta http-equiv="Content-Security-Policy">` |
 | Splash aparece toda vez | localStorage limpo ou expirado | Comportamento normal — expira em 1 hora |
 | Scrollbar não aparece no mobile | CSS nativo do mobile esconde | Já resolvido com scrollbar customizada via JS |
